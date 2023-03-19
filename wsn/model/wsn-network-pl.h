@@ -7,7 +7,7 @@
 namespace ns3
 {
 
-class WsnPayLoad : public Tag
+class WsnNwkPayload : public Tag
 {
 public:
 
@@ -61,7 +61,7 @@ public:
         WSN_PL_UNKONW_COMMAND,
     };
 
-    WsnPayLoad(){}
+    WsnNwkPayload(){}
     static TypeId GetTypeId (void);
     virtual TypeId GetInstanceTypeId (void) const;
     virtual uint32_t GetSerializedSize (void) const;

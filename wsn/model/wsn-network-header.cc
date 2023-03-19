@@ -104,7 +104,6 @@ NwkHeader::GetSerializedSize() const
 }
 
 /*
-
     uint16_t destAddr;
     uint16_t sourceAddr;
     uint8_t radius;
@@ -152,13 +151,6 @@ NwkHeader::Deserialize (Buffer::Iterator start)
     sourceList.push_back(static_cast<uint16_t>(start.ReadU16()));
   return GetSerializedSize()+nwkframe.GetSerializedSize();
 }
-
-void 
-NwkHeader::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
-{
-  
-}
-
 
 
 }

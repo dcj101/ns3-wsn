@@ -1,6 +1,7 @@
 #include "ns3/core-module.h"
 #include "ns3/wsn-address-allocator.h"
 #include "ns3/log.h"
+#include "ns3/ptr.h"
 
 using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("testExample");
@@ -10,14 +11,14 @@ int main () {
     LogComponentEnable ("testExample", LogLevel (LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_INFO));
     // 定义 ZigbeeAddressAllocator 对象
 
-    WsnAddressAllocator allocator(5,3,3);
-
+    WsnAddressAllocator *allocator = WsnAddressAllocator::Get ();
+    allocator->SetWsnAddressAllocator(5,3,3);
     // 分配地址
-    uint16_t addr1 = allocator.AllocateAddress(0,1,0);
-    uint16_t addr2 = allocator.AllocateAddress(0,1,0);
-    uint16_t addr3 = allocator.AllocateAddress(0,1,0);
-    uint16_t addr7 = allocator.AllocateAddress(0,0,0);
-    uint16_t addr8 = allocator.AllocateAddress(0,0,0);
+    uint16_t addr1 = allocator->AllocateAddress(0,1,0);
+    uint16_t addr2 = allocator->AllocateAddress(0,1,0);
+    uint16_t addr3 = allocator->AllocateAddress(0,1,0);
+    uint16_t addr7 = allocator->AllocateAddress(0,0,0);
+    uint16_t addr8 = allocator->AllocateAddress(0,0,0);
 
     // 输出分配的地址
     NS_LOG_INFO("Address 1: " << addr1);
@@ -27,14 +28,14 @@ int main () {
     NS_LOG_INFO("Address 8: " << addr8);
 
     // 重置地址分配器
-    // allocator.Reset();
+    // allocator->Reset();
 
     // 再次分配地址
-    uint16_t addr4 = allocator.AllocateAddress(1,1,addr1);
-    uint16_t addr5 = allocator.AllocateAddress(1,1,addr1);
-    uint16_t addr6 = allocator.AllocateAddress(1,1,addr1);
-    uint16_t addr9 = allocator.AllocateAddress(1,0,addr1);
-    uint16_t addr10 = allocator.AllocateAddress(1,0,addr1);
+    uint16_t addr4 = allocator->AllocateAddress(1,1,addr1);
+    uint16_t addr5 = allocator->AllocateAddress(1,1,addr1);
+    uint16_t addr6 = allocator->AllocateAddress(1,1,addr1);
+    uint16_t addr9 = allocator->AllocateAddress(1,0,addr1);
+    uint16_t addr10 = allocator->AllocateAddress(1,0,addr1);
 
     // 输出分配的地址
     NS_LOG_INFO("Address 4: " << addr4);

@@ -17,7 +17,7 @@ m_frameControl(0)
 
 ApsFrame::~ApsFrame()
 {
-    
+  NS_LOG_FUNCTION (this);
 }
 
 void 
@@ -127,11 +127,11 @@ NS_OBJECT_ENSURE_REGISTERED (AppHeader);
 
 AppHeader::AppHeader():
         frameControl(),
-        destinationEndpoint(0),
-        groupaddress(0),
-        clusterID(0),
-        profileID(0),
-        sourceEndpoint(0)
+        destinationEndpoint(0x1),
+        groupaddress(0xffff),
+        clusterID(0x0402),
+        profileID(0x000),
+        sourceEndpoint(0x1)
 { 
     Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
     x->SetAttribute ("Min", DoubleValue (0.0));
@@ -141,7 +141,7 @@ AppHeader::AppHeader():
 
 AppHeader::~AppHeader()
 {
-    
+
 }
 
 TypeId 

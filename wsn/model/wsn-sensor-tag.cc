@@ -27,7 +27,7 @@ WsnSensorTag::GetInstanceTypeId (void) const
 }
 
 WsnSensorTag::WsnSensorTag (void)
-  : m_temperature (0.0)
+  : m_temperature (10.0)
 {
 }
 

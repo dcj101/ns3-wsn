@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include "wsn-route.h"
+#include "wsn-network-pl.h"
 
 
 namespace ns3
@@ -24,7 +25,7 @@ public:
     };
     enum ProtocolVersion
     {
-        ZIGBB = 2006
+        ZIGBB = 0x00,
     };
     enum FindRoute
     {
@@ -140,6 +141,7 @@ public:
     void DataIndication (McpsDataIndicationParams params, Ptr<Packet> p);
 
 private:
+    WsnNwkPayload wsnNwkPayload;
     NwkFrame nwkframe;
     uint16_t destAddr;
     uint16_t sourceAddr;

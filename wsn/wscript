@@ -11,6 +11,7 @@ def build(bld):
         'model/wsn-route.cc',
         'model/wsn-nwk-short-address.cc',
         'model/wsn-address-allocator.cc',
+        'model/wsn-network.cc',
         'helper/wsn-helper.cc',
         ]
     
@@ -25,6 +26,7 @@ def build(bld):
         'model/wsn-route.h',
         'model/wsn-nwk-short-address.h',
         'model/wsn-address-allocator.h',
+        'model/wsn-network.h',
         'helper/wsn-helper.h',
         ]
 

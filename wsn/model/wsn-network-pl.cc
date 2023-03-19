@@ -4,35 +4,35 @@
 namespace ns3
 {
 
-NS_LOG_COMPONENT_DEFINE ("WsnPayLoad");
+NS_LOG_COMPONENT_DEFINE ("WsnNwkPayload");
 
-NS_OBJECT_ENSURE_REGISTERED (WsnPayLoad);
+NS_OBJECT_ENSURE_REGISTERED (WsnNwkPayload);
 
 TypeId 
-WsnPayLoad::GetTypeId (void)
+WsnNwkPayload::GetTypeId (void)
 {
-    static TypeId tid = TypeId ("ns3::WsnPayLoad")
+    static TypeId tid = TypeId ("ns3::WsnNwkPayload")
                         .SetParent<Tag> ()
-                        .AddConstructor<WsnPayLoad> ()
+                        .AddConstructor<WsnNwkPayload> ()
     ;
   return tid;
 }
 
 TypeId 
-WsnPayLoad::GetInstanceTypeId (void) const
+WsnNwkPayload::GetInstanceTypeId (void) const
 {
     return GetTypeId ();
 }
 
 
 uint32_t 
-WsnPayLoad::GetSerializedSize (void) const
+WsnNwkPayload::GetSerializedSize (void) const
 {
     return 0;
 }
 
 void 
-WsnPayLoad::Print (std::ostream &os) const
+WsnNwkPayload::Print (std::ostream &os) const
 {
     os << "isCommand: " << isCommand << "\n";
     os << "nwkCommandIdentifier: " << static_cast<int>(nwkCommandIdentifier) << "\n";
@@ -60,7 +60,7 @@ WsnPayLoad::Print (std::ostream &os) const
 }
 
 void 
-WsnPayLoad::Serialize (TagBuffer start) const
+WsnNwkPayload::Serialize (TagBuffer start) const
 {
     if(isCommand)
     {
@@ -92,7 +92,7 @@ WsnPayLoad::Serialize (TagBuffer start) const
 }
 
 void 
-WsnPayLoad::Deserialize (TagBuffer start)
+WsnNwkPayload::Deserialize (TagBuffer start)
 {
     if(isCommand)
     {

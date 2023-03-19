@@ -19,7 +19,7 @@ WsnApplication::GetTypeId (void)
 
 WsnApplication::WsnApplication()
 {
-
+  m_point = 0;
 }
 
 WsnApplication::~WsnApplication()
@@ -27,12 +27,37 @@ WsnApplication::~WsnApplication()
 
 }
 
-void WsnApplication::SendData()
+void 
+WsnApplication::SendData()
 {
   NS_LOG_FUNCTION (this);
+  AppHeader appHeader;
+  m_packet->AddHeader(appHeader);
   
+  WsnSensorTag sensor;
+  m_packet->AddPacketTag(sensor);
+  
+
 }
 
+void 
+WsnApplication::SetRemote(NwkShortAddress addr, uint8_t point)
+{
+  m_peerAddr = addr;
+  m_point = point;
+}
+
+void 
+WsnApplication::SetRemote(NwkShortAddress addr)
+{
+  m_peerAddr = addr;
+}
+
+void 
+WsnApplication::SetNode(Ptr<Node> node) 
+{
+  m_node = node;
+}
 
 void 
 WsnApplication::StartApplication() 
@@ -60,14 +85,12 @@ WsnApplication::DoDispose(void)
 {
   NS_LOG_FUNCTION (this);
 
-
 } 
 
 void 
 WsnApplication::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
-  
 }
 
 }

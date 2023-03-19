@@ -18,16 +18,14 @@ WsnAddressAllocator::~WsnAddressAllocator()
     m_route.clear();
 }
 
-WsnAddressAllocator::WsnAddressAllocator()
+void 
+WsnAddressAllocator::SetWsnAddressAllocator(uint16_t n, uint16_t r, uint8_t d) 
 {
-    m_n = m_r = m_d = 0;
-    m_node.clear();
-    m_route.clear();
-}
-
-WsnAddressAllocator::WsnAddressAllocator(uint16_t n, uint16_t r, uint8_t d) 
-                    : m_n(n), m_r(r), m_d(d), m_baseAddr(1), m_maxAddr(CalcMaxAddr())
-{
+    m_n = n;
+    m_r = r;
+    m_d = d;
+    m_baseAddr = 1;
+    m_maxAddr = CalcMaxAddr();
     m_node.clear();
     m_route.clear();
 }

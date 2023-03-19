@@ -12,11 +12,11 @@
 #include "ns3/core-module.h"
 
 #include "wsn-nwk-short-address.h"
-#include "wsn-sensor-tag.h"
 #include "wsn-application-header.h"
 #include "wsn-network-header.h"
 #include "wsn-network-pl.h"
-
+#include "wsn-network.h"
+#include "wsn-sensor-tag.h"
 
 
 
@@ -29,29 +29,51 @@ enum PROTOCOL_TYPE
   COMMAND_PROTOCOL = 0x01,
 };
 
+
+
 class  WsnApplication : public Application
 {
 public:
 
     static TypeId GetTypeId (void);
+
     WsnApplication();
+ 
     ~WsnApplication();
     
     void SendData();
     
+    void SetRemote(NwkShortAddress addr, uint8_t point);
 
+    void SetRemote(NwkShortAddress addr);
+
+    void SetNode(Ptr<Node> node);
+
+    
 private:
+
     virtual void StartApplication ();
+
     virtual void StopApplication ();
 
     void SendSensorNodeInfo();
 
+    Ptr<Node> m_node;
+
+    Ptr<Packet> m_packet;
+
+    NwkShortAddress m_peerAddr;
+
+    uint8_t m_point;
+
+
 protected:
+
     virtual void DoDispose (void);
-    virtual void DoInitialize (void);
-  
-  
     
+    virtual void DoInitialize (void);
+    
+
 };
 
 }
