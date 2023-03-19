@@ -1,14 +1,19 @@
 #include "wsn-network-pl.h"
+#include <ns3/log.h>
 
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE ("WsnPayLoad");
+
+NS_OBJECT_ENSURE_REGISTERED (WsnPayLoad);
 
 TypeId 
 WsnPayLoad::GetTypeId (void)
 {
     static TypeId tid = TypeId ("ns3::WsnPayLoad")
                         .SetParent<Tag> ()
-                        .AddConstructor<Tag> ()
+                        .AddConstructor<WsnPayLoad> ()
     ;
   return tid;
 }
@@ -23,8 +28,35 @@ WsnPayLoad::GetInstanceTypeId (void) const
 uint32_t 
 WsnPayLoad::GetSerializedSize (void) const
 {
-
     return 0;
+}
+
+void 
+WsnPayLoad::Print (std::ostream &os) const
+{
+    os << "isCommand: " << isCommand << "\n";
+    os << "nwkCommandIdentifier: " << static_cast<int>(nwkCommandIdentifier) << "\n";
+    os << "commandOption: " << static_cast<int>(commandOption) << "\n";
+    os << "routeRequestIdentifier: " << static_cast<int>(routeRequestIdentifier) << "\n";
+    os << "responseAddr: " << responseAddr << "\n";
+    os << "pathCast: " << static_cast<int>(pathCast) << "\n";
+    os << "originatorAddr: " << originatorAddr << "\n";
+    os << "errorCode: " << static_cast<int>(errorCode) << "\n";
+    os << "replayCount: " << static_cast<int>(replayCount) << "\n";
+    os << "replayList: ";
+    for (uint16_t addr : replayList) {
+        os << addr << " ";
+    }
+    os << "\n";
+    os << "capabilityInformation: " << static_cast<int>(capabilityInformation) << "\n";
+    os << "shortAddr: " << shortAddr << "\n";
+    os << "rejoinStatus: " << static_cast<int>(rejoinStatus) << "\n";
+    os << "linkStatusOp: " << static_cast<int>(linkStatusOp) << "\n";
+    os << "linkStatusList: ";
+    for (auto& pair : linkStatusList) {
+        os << "(" << pair.first << ", " << static_cast<int>(pair.second) << ") ";
+    }
+    os << "\n";
 }
 
 void 
@@ -40,15 +72,16 @@ WsnPayLoad::Serialize (TagBuffer start) const
         start.WriteU16(originatorAddr);
         start.WriteU8(errorCode);
         start.WriteU8(replayCount);
-        start.WriteU16(replayList);
-        for(vector<uint16_t>::iterator it = replayList.begin(); it != replayList.end(); it ++)
+        
+        for(std::vector<uint16_t>::const_iterator it = replayList.begin(); it != replayList.end(); it ++)
         {
             start.WriteU16(*it);
         }
         start.WriteU8(capabilityInformation);
         start.WriteU16(shortAddr);
         start.WriteU8(rejoinStatus);
-        for(vector< pair<uint16_t,uint8_t> >::iterator it = linkStatusList.begin(); it != linkStatusList.end(); it ++)
+        start.WriteU8(linkStatusOp);
+        for(std::vector< std::pair<uint16_t,uint8_t> >::const_iterator it = linkStatusList.begin(); it != linkStatusList.end(); it ++)
         {
             start.WriteU16((*it).first);
             start.WriteU8((*it).second);
@@ -63,26 +96,29 @@ WsnPayLoad::Deserialize (TagBuffer start)
 {
     if(isCommand)
     {
-        start.ReadU8(nwkCommandIdentifier);
-        start.ReadU8(commandOption);
-        start.ReadU8(routeRequestIdentifier);
-        start.ReadU16(responseAddr);
-        start.ReadU8(pathCast);
-        start.ReadU16(originatorAddr);
-        start.ReadU8(errorCode);
-        start.ReadU8(replayCount);
-        start.ReadU16(replayList);
-        for(vector<uint16_t>::iterator it = replayList.begin(); it != replayList.end(); it ++)
+        nwkCommandIdentifier = start.ReadU8();
+        commandOption = start.ReadU8();
+        routeRequestIdentifier = start.ReadU8();
+        responseAddr = start.ReadU16();
+        pathCast = start.ReadU8();
+        originatorAddr = start.ReadU16();
+        errorCode = start.ReadU8();
+        replayCount = start.ReadU8();
+
+        for(int i = 0; i < replayCount; ++ i) 
         {
-            start.ReadU16(*it);
+            replayList.push_back(static_cast<uint16_t>(start.ReadU16()));
         }
-        start.ReadU8(capabilityInformation);
-        start.ReadU16(shortAddr);
-        start.ReadU8(rejoinStatus);
-        for(vector< pair<uint16_t,uint8_t> >::iterator it = linkStatusList.begin(); it != linkStatusList.end(); it ++)
+        capabilityInformation = start.ReadU8();
+        shortAddr = start.ReadU16();
+        rejoinStatus = start.ReadU8();
+        linkStatusOp = start.ReadU8();
+
+        for(int i = 0; i < (linkStatusOp & 0x1F); ++ i) 
         {
-            start.ReadU16((*it).first);
-            start.ReadU8((*it).second);
+            uint16_t NwkAddr = start.ReadU16();
+            uint8_t LinkStatus = start.ReadU8();
+            linkStatusList.push_back(std::make_pair(NwkAddr,LinkStatus));
         }
     }
 }

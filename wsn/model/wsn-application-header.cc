@@ -1,35 +1,47 @@
 #include "wsn-application-header.h"
+#include "ns3/double.h"
+#include <ns3/log.h>
 
 namespace ns3
 {
 
+NS_LOG_COMPONENT_DEFINE ("wsnApplication");
+
+NS_OBJECT_ENSURE_REGISTERED (ApsFrame);
+
 ApsFrame::ApsFrame():
 m_frameControl(0)
 {
+  NS_LOG_FUNCTION (this);
+}
+
+ApsFrame::~ApsFrame()
+{
+    
 }
 
 void 
-ApsFrame::setFrameType(FrameType frametype)
+ApsFrame::setFrameType(AFrameType frametype)
 {
     m_frameControl |= static_cast<uint16_t>(frametype);
 }
 
-FrameType 
+AFrameType 
 ApsFrame::getFrameType() const
 {
-    return static_cast<FrameType>(m_frameControl & 0x3);
+    return static_cast<AFrameType>(m_frameControl & 0x3);
 }
 
 void 
-ApsFrame::setDeliveryMode(DeliveryMode deliverymode)
+ApsFrame::setDeliveryMode(ADeliveryMode deliverymode)
 {
     m_frameControl |= static_cast<uint16_t>(deliverymode) << 2;
 }
 
-DeliveryMode 
+ADeliveryMode 
 ApsFrame::getDeliveryMode() const 
 {
-    return static_cast<DeliveryMode>((m_frameControl >> 2) & 0x3);
+    return static_cast<ADeliveryMode>((m_frameControl >> 2) & 0x3);
 }
 
 void 
@@ -45,15 +57,15 @@ ApsFrame::getApsAckFormat() const
 }
 
 void 
-ApsFrame::setSecurityLevel(SecurityLevel securitylevel)
+ApsFrame::setSecurityLevel(ASecurityLevel securitylevel)
 {
     m_frameControl |= static_cast<uint16_t>(securitylevel) << 5;
 }
 
-SecurityLevel 
+ASecurityLevel 
 ApsFrame::getSecurityLevel() const
 {
-    return static_cast<SecurityLevel>((m_frameControl >> 5) & 0x1);
+    return static_cast<ASecurityLevel>((m_frameControl >> 5) & 0x1);
 }
 
 void 
@@ -73,14 +85,22 @@ ApsFrame::GetTypeId (void)
 {
     static TypeId tid = TypeId ("ns3::ApsFrame")
                     .SetParent<Header> ()
-                    .AddConstructor<Header> ()
+                    .AddConstructor<ApsFrame> ()
     ;
+    return tid;
 }
 
 void 
 ApsFrame::Print(std::ostream &os) const 
 {
-    
+    os << "m_frameControl" << m_frameControl << std::endl;
+
+}
+
+TypeId
+ApsFrame::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
 }
 
 uint32_t 
@@ -98,9 +118,12 @@ ApsFrame::Serialize (Buffer::Iterator start) const
 uint32_t 
 ApsFrame::Deserialize (Buffer::Iterator start)
 {
-    start.ReadU16(m_frameControl);
+    m_frameControl = start.ReadU16();
+    return GetSerializedSize();
 }
-//........................
+//......................................
+NS_OBJECT_ENSURE_REGISTERED (AppHeader);
+
 
 AppHeader::AppHeader():
         frameControl(),
@@ -108,10 +131,17 @@ AppHeader::AppHeader():
         groupaddress(0),
         clusterID(0),
         profileID(0),
-        sourceEndpoint(0),
-        FSC(0)
+        sourceEndpoint(0)
 { 
+    Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+    x->SetAttribute ("Min", DoubleValue (0.0));
+    x->SetAttribute ("Max", DoubleValue (100.0));
+    apsCount = x->GetInteger ();
+}
 
+AppHeader::~AppHeader()
+{
+    
 }
 
 TypeId 
@@ -119,21 +149,30 @@ AppHeader::GetTypeId (void)
 {
     static TypeId tid = TypeId ("ns3::AppHeader")
                     .SetParent<Header> ()
-                    .AddConstructor<Header> ()
+                    .AddConstructor<AppHeader> ()
     ;
+    return tid;
 }
 
 TypeId 
 AppHeader::GetInstanceTypeId (void) const 
 {
-    return GetTypeId()
+    return GetTypeId();
 }
 
 void 
-AppHeader::Print(std::ostream &os) const 
-{
-    
+AppHeader::Print(std::ostream &os) const {
+    frameControl.Print(os);
+    os << "Frame Control: " << frameControl << std::endl;
+    os << "Destination Endpoint: " << static_cast<int>(destinationEndpoint) << std::endl;
+    os << "Group Address: " << groupaddress << std::endl;
+    os << "Cluster ID: " << clusterID << std::endl;
+    os << "Profile ID: " << profileID << std::endl;
+    os << "Source Endpoint: " << static_cast<int>(sourceEndpoint) << std::endl;
+    os << "APS Count: " << static_cast<int>(apsCount) << std::endl;
 }
+
+
 
 uint32_t 
 AppHeader::GetSerializedSize (void) const
@@ -153,20 +192,19 @@ AppHeader::Serialize (Buffer::Iterator start) const
     start.WriteU16(profileID);
     start.WriteU8(sourceEndpoint);
     start.WriteU8(apsCount);
-    start.WriteU16(FSC);
 }
 
 uint32_t 
 AppHeader::Deserialize (Buffer::Iterator start)
 {
     frameControl.Deserialize(start);
-    start.ReadU8(destinationEndpoint);
-    start.ReadU16(groupaddress);
-    start.ReadU16(clusterID);
-    start.ReadU16(profileID);
-    start.ReadU8(sourceEndpoint);
-    start.ReadU8(apsCount);
-    start.ReadU16(FSC);
+    destinationEndpoint = start.ReadU8();
+    groupaddress = start.ReadU16();
+    clusterID = start.ReadU16();
+    profileID = start.ReadU16();
+    sourceEndpoint = start.ReadU8();
+    apsCount = start.ReadU8();
+    return GetSerializedSize();
 }
 
 

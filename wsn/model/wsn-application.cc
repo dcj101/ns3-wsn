@@ -1,55 +1,73 @@
 #include "wsn-application.h"
+#include <ns3/log.h>
 
 namespace ns3
 {
+NS_LOG_COMPONENT_DEFINE ("WsnApplication");
+
+NS_OBJECT_ENSURE_REGISTERED (WsnApplication);
+
 TypeId 
 WsnApplication::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns::WsnApplication")
-    .SetParent<ns3::Application> ()
+  static TypeId tid = TypeId ("ns3::WsnApplication")
+    .SetParent<Application> ()
     .AddConstructor<WsnApplication> ()
-    .AddAttribute ("StartTime", "Time at which the application will start",
-                  TimeValue (Seconds (0.0)),
-                  MakeTimeAccessor (&WsnApplication::m_startTime),
-                  MakeTimeChecker ())
-    .AddAttribute ("StopTime", "Time at which the application will stop",
-                  TimeValue (TimeStep (0)),
-                  MakeTimeAccessor (&WsnApplication::m_stopTime),
-                  MakeTimeChecker ())
     ;
     return tid;
-
 }
 
 WsnApplication::WsnApplication()
 {
-  
+
 }
 
 WsnApplication::~WsnApplication()
 {
+
 }
 
-
+void WsnApplication::SendData()
+{
+  NS_LOG_FUNCTION (this);
+  
+}
 
 
 void 
 WsnApplication::StartApplication() 
 {
-  Simulator::Schedule (Seconds (1), &SendSensorNodeInfo);
+  NS_LOG_FUNCTION (this);
+  Simulator::Schedule (Seconds (1), &ns3::WsnApplication::SendSensorNodeInfo,this);
 }
 
 void 
 WsnApplication::StopApplication()
 {
+  NS_LOG_FUNCTION (this);
 
 }
 
 void 
 WsnApplication::SendSensorNodeInfo()
 {
+  NS_LOG_FUNCTION (this);
+  Simulator::Schedule (Seconds (1), &ns3::WsnApplication::SendSensorNodeInfo,this);
+}
 
-  Simulator::Schedule (Seconds (1), &SendSensorNodeInfo);
+void 
+WsnApplication::DoDispose(void)
+{
+  NS_LOG_FUNCTION (this);
+
+
+} 
+
+void 
+WsnApplication::DoInitialize (void)
+{
+  NS_LOG_FUNCTION (this);
+  
 }
 
 }

@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "ns3/header.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3
 {
@@ -11,49 +12,49 @@ Zigbee Transmission Layer ZTL
 
 1 byte
 | 0 |  1  |  2  |  3   |      4     |      5      |      6       | 7  |
-|FrameType|DeliveryMode|ApsAckFormat|SecurityLevel|Acknowledgment| Re |
+|FrameType|ADeliveryMode|ApsAckFormat|SecurityLevel|Acknowledgment| Re |
 
 */
 
+enum AFrameType 
+{
+    APS_FRAME_TYPE_DATA = 0x00,
+    APS_FRAME_TYPE_COMMAND = 0x01,
+    APS_FRAME_TYPE_ACKNOWLEDGE = 0x02,
+    APS_FRAME_TYPE_RESERVED = 0x03,
+};
+
+enum ADeliveryMode 
+{
+    APS_UNICAST = 0x00,
+    APS_INDIRECT = 0x01,
+    APS_BROADCAST = 0x02,
+    APS_GROUP = 0x03,
+    APS_MULTICAST = 0x04
+};
+
+enum ApsAckFormat 
+{
+    APS_ACK_NO_ACK = 0x0,
+    APS_ACK_YES_ACK = 0x1
+};
+
+enum ASecurityLevel 
+{
+    APS_SECURITY_NONE = 0x0,
+    APS_SECURITY_ENC = 0x1
+};
+
+enum Acknowledgment 
+{
+    APS_NO_ACKNOWLEDGMENT = 0x0,
+    APS_ACKNOWLEDGMENT_REQUIRED = 0x1
+};
 
 
 class ApsFrame : public Header
 {
 public:
-    enum FrameType 
-    {
-        FRAME_TYPE_DATA = 0x00,
-        FRAME_TYPE_COMMAND = 0x01,
-        FRAME_TYPE_ACKNOWLEDGE = 0x02,
-        FRAME_TYPE_RESERVED = 0x03
-    };
-
-    enum DeliveryMode 
-    {
-        UNICAST = 0x00,
-        INDIRECT = 0x01,
-        BROADCAST = 0x02,
-        GROUP = 0x03,
-        MULTICAST = 0x04
-    };
-
-    enum ApsAckFormat 
-    {
-        APS_ACK_NO_ACK = 0x0,
-        APS_ACK_YES_ACK = 0x1
-    };
-
-    enum SecurityLevel 
-    {
-        SECURITY_NONE = 0x0,
-        SECURITY_ENC = 0x1
-    };
-
-    enum Acknowledgment 
-    {
-        NO_ACKNOWLEDGMENT = 0x0,
-        ACKNOWLEDGMENT_REQUIRED = 0x1
-    };
 
     static TypeId GetTypeId (void);
 
@@ -64,18 +65,19 @@ public:
     uint32_t Deserialize (Buffer::Iterator start) override;
 
     ApsFrame();
+    ~ApsFrame();
 
-    void setFrameType(FrameType frametype);
-    FrameType getFrameType() const;
+    void setFrameType(AFrameType frametype);
+    AFrameType getFrameType() const;
 
-    void setDeliveryMode(DeliveryMode deliverymode);
-    DeliveryMode getDeliveryMode() const;
+    void setDeliveryMode(ADeliveryMode deliverymode);
+    ADeliveryMode getDeliveryMode() const;
 
     void setApsAckFormat(ApsAckFormat apsackformat);
     ApsAckFormat getApsAckFormat() const;
 
-    void setSecurityLevel(SecurityLevel securitylevel);
-    SecurityLevel getSecurityLevel() const;
+    void setSecurityLevel(ASecurityLevel securitylevel);
+    ASecurityLevel getSecurityLevel() const;
 
     void setAcknowledgment(Acknowledgment acknowledgment);
     Acknowledgment getAcknowledgment() const;
@@ -89,6 +91,29 @@ class AppHeader : public Header
 {
 public:
     AppHeader();
+    ~AppHeader();
+
+    ApsFrame GetFrameControl() const { return frameControl; }
+    void SetFrameControl(ApsFrame fc) { frameControl = fc; }
+
+    uint8_t GetDestinationEndpoint() const { return destinationEndpoint; }
+    void SetDestinationEndpoint(uint8_t de) { destinationEndpoint = de; }
+
+    uint16_t GetGroupAddress() const { return groupaddress; }
+    void SetGroupAddress(uint16_t ga) { groupaddress = ga; }
+
+    uint16_t GetClusterID() const { return clusterID; }
+    void SetClusterID(uint16_t cid) { clusterID = cid; }
+
+    uint16_t GetProfileID() const { return profileID; }
+    void SetProfileID(uint16_t pid) { profileID = pid; }
+
+    uint8_t GetSourceEndpoint() const { return sourceEndpoint; }
+    void SetSourceEndpoint(uint8_t se) { sourceEndpoint = se; }
+
+    uint8_t GetApsCount() const { return apsCount; }
+    void SetApsCount(uint8_t count) { apsCount = count; }
+
 
     static TypeId GetTypeId (void);
 
@@ -100,13 +125,12 @@ public:
 
 private:    
     ApsFrame frameControl;
-    uint8_t destinationEndpoint;
-    uint16_t groupaddress;
-    uint16_t clusterID;
-    uint16_t profileID;
-    uint8_t sourceEndpoint;
-    uint8_t apsCount;
-    uint16_t FSC;
+    uint8_t destinationEndpoint; //0x1
+    uint16_t groupaddress; // 0xffff
+    uint16_t clusterID;    // 0x0402 温度
+    uint16_t profileID;    // 0x0000
+    uint8_t sourceEndpoint; // 0x1
+    uint8_t apsCount;     // rand
 };
 
 
