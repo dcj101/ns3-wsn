@@ -9,7 +9,10 @@
 #include "ns3/lr-wpan-mac.h"
 #include "ns3/type-id.h"
 #include "ns3/ptr.h"
+#include "ns3/mac48-address.h"
 
+#include "wsn-address-allocator.h"
+#include "wsn-neighbor-table.h"
 #include "wsn-network-header.h"
 #include "wsn-nwk-short-address.h"
 #include "wsn-route.h"
@@ -18,7 +21,7 @@ namespace ns3
 {
 
 
-enum node_type
+enum NODE_TYPE
 {
     EDGE  = 0x00,
     ROUTE = 0x01,
@@ -31,7 +34,7 @@ class WsnNwkProtocol : public Object
 
     static TypeId GetTypeId (void);
     
-    NwkHeader BuildHeader(NwkShortAddress dstAddr);
+    void SendData(NwkShortAddress dstAddr, Ptr<Packet> packet);
 
     void BuildRtable(std::vector<StaticRoute> &rtable);
 
@@ -39,12 +42,13 @@ class WsnNwkProtocol : public Object
 
     void Assign(Ptr<LrWpanNetDevice> netDevice, NwkShortAddress addr);
 
-    void SetNodeType(uint8_t type);
+    void SetNodeType(NODE_TYPE type);
 
     void SetDepth(uint8_t type);
     
     void SetNode(Ptr<Node> node);
 
+    void SetAck(bool ack);
 
     static void BeaconIndication (MlmeBeaconNotifyIndicationParams params, Ptr<Packet> p)
     {
@@ -103,10 +107,21 @@ class WsnNwkProtocol : public Object
 
     RoutingTable m_rtable;
 
-    uint8_t m_nodeType;
+    NeighborTable m_ntable;
+
+    NODE_TYPE m_nodeType;
 
     uint8_t m_depth;
 
+    bool m_ack;
+
+    MlmeStartConfirmCallback cb0;
+
+    McpsDataConfirmCallback cb1;
+    
+    MlmeBeaconNotifyIndicationCallback cb3;
+    
+    McpsDataIndicationCallback cb4;
 };  
 
 }

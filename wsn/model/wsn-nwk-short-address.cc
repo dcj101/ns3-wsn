@@ -39,6 +39,13 @@ NwkShortAddress::NwkShortAddress ()
   std::memset (m_address, 0, 2);
 }
 
+NwkShortAddress::NwkShortAddress (uint16_t addr)
+{
+  NS_LOG_FUNCTION (this);
+  m_address[0] = (addr >> 8) & 0xff;
+  m_address[1] = (addr >> 0) & 0xff;
+}
+
 NwkShortAddress::NwkShortAddress (const char *str)
 {
   NS_LOG_FUNCTION (this << str);
@@ -167,11 +174,11 @@ NwkShortAddress::IsMulticast (void) const
 }
 
 uint16_t
-NwkShortAddress::GetAddress(void) const
+NwkShortAddress::GetAddressU16(void) const
 {
   uint16_t address = 0;
-  address = (m_address[0] << 8);
-  address |= m_address[1];
+  address  = (m_address[0] << 8);
+  address |= (m_address[1] << 8);
   return address;
 }
 

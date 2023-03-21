@@ -2,12 +2,14 @@
 #define WSN_NETWORK_HEADER_H
 #include "ns3/header.h"
 #include "ns3/packet.h"
+#include "ns3/random-variable-stream.h"
 #include <ns3/lr-wpan-module.h>
 #include <stdint.h>
 #include <vector>
 #include <iostream>
 #include "wsn-route.h"
 #include "wsn-network-pl.h"
+#include "wsn-nwk-short-address.h"
 
 
 namespace ns3
@@ -20,45 +22,45 @@ public:
 
     enum FrameType
     {
-        DATA = 0x00,
-        COMMAND = 0x11,
+        NWK_FRAME_DATA = 0x00,
+        NWK_FRAME_COMMAND = 0x11,
     };
     enum ProtocolVersion
     {
-        ZIGBB = 0x00,
+        NWK_FRAME_ZIGBB = 0x00,
     };
     enum FindRoute
     {
-        SUPPRESS_ROUTING = 0x00,
-        ENABLE_ROUTING = 0x01,
-        FORCED_ROUTING = 0x02,
-        RESERVE = 0x03,
+        NWK_FRAME_SUPPRESS_ROUTING = 0x00,
+        NWK_FRAME_ENABLE_ROUTING = 0x01,
+        NWK_FRAME_FORCED_ROUTING = 0x02,
+        NWK_FRAME_RESERVE = 0x03,
     };
     enum MultiCastFlag 
     {
-        BROADCAST_OR_UNICAST = 0x00,
-        MULTICAST = 0x01,
+        NWK_FRAME_BROADCAST_OR_UNICAST = 0x00,
+        NWK_FRAME_MULTICAST = 0x01,
     };  
     enum SecurityLevel 
     {
-        SECURITY_NONE = 0x0,
-        SECURITY_ENC = 0x1
+        NWK_FRAMK_SECURITY_NONE = 0x0,
+        NWK_FRAMK_SECURITY_ENC = 0x1
     }; 
     enum SourcerRoutingSubdomain
     {
-        NOT_OPEN = 0x00,
-        IS_OPEN = 0x01,
+        NWK_FRAMK_NOT_OPEN = 0x00,
+        NWK_FRAMK_IS_OPEN = 0x01,
     };
     enum DestinationIEEEAddressSubfield
     {
-        D_NOT_CONTAIN = 0x00,
-        D_IS_CONTAIN = 0x01,
+        NWK_FRAME_D_NOT_CONTAIN = 0x00,
+        NWK_FRAME_D_IS_CONTAIN = 0x01,
     };
 
     enum SourceIEEEAddressSubfield
     {
-        S_NOT_CONTAIN = 0x00,
-        S_IS_CONTAIN = 0x01,
+        NWK_FRAME_S_NOT_CONTAIN = 0x00,
+        NWK_FRAME_S_IS_CONTAIN = 0x01,
     };
 
     NwkFrame();
@@ -71,10 +73,7 @@ public:
     void Serialize (Buffer::Iterator start) const override;
     uint32_t Deserialize (Buffer::Iterator start) override;
 
-    void setFrameType(FrameType frametype);
-    FrameType getFrameType() const;
-
-    void setProtocolVersion();
+    NwkFrame::FrameType GetType(void) const;
 
 
 private:
@@ -85,18 +84,19 @@ class NwkHeader : public Header
 {
 
 public:
+    
+
+    NwkHeader();
+    
     ~NwkHeader(){}
 
-    NwkHeader() : destAddr(0), sourceAddr(0), radius(0), seqNum(0), destAddrIEEE(0),
-                  sourceAddrIEEE(0), multicastContral(0), relayCount(0), relayIndex(0) {}
-    
     // Getter and setter for destAddr
-    void SetDestAddr(uint16_t addr) { destAddr = addr; }
-    uint16_t GetDestAddr() const { return destAddr; }
+    void SetDestAddr(NwkShortAddress addr) { destAddr = addr; }
+    NwkShortAddress GetDestAddr() const { return destAddr; }
     
     // Getter and setter for sourceAddr
-    void SetSourceAddr(uint16_t addr) { sourceAddr = addr; }
-    uint16_t GetSourceAddr() const { return sourceAddr; }
+    void SetSourceAddr(NwkShortAddress addr) { sourceAddr = addr; }
+    NwkShortAddress GetSourceAddr() const { return sourceAddr; }
     
     // Getter and setter for radius
     void SetRadius(uint8_t rad) { radius = rad; }
@@ -127,8 +127,8 @@ public:
     uint8_t GetRelayIndex() const { return relayIndex; }
     
     // Getter and setter for sourceList
-    void SetSourceList(const std::vector<uint16_t>& list) { sourceList = list; }
-    std::vector<uint16_t> GetSourceList() const { return sourceList; }
+    void SetSourceList(const NwkShortAddress & list) { sourceList.push_back(list); }
+    std::vector<NwkShortAddress> GetSourceList() const { return sourceList; }
 
     static TypeId GetTypeId (void);
 
@@ -138,21 +138,21 @@ public:
     void Serialize (Buffer::Iterator start) const override;
     uint32_t Deserialize (Buffer::Iterator start) override;
     
-    void DataIndication (McpsDataIndicationParams params, Ptr<Packet> p);
+    NwkFrame::FrameType GetType(void) const;
 
 private:
     WsnNwkPayload wsnNwkPayload;
     NwkFrame nwkframe;
-    uint16_t destAddr;
-    uint16_t sourceAddr;
+    NwkShortAddress destAddr;
+    NwkShortAddress sourceAddr;
     uint8_t radius;
     uint8_t seqNum;
-    uint16_t destAddrIEEE;
-    uint16_t sourceAddrIEEE;
+    uint64_t destAddrIEEE;
+    uint64_t sourceAddrIEEE;
     uint8_t multicastContral;
     uint8_t relayCount;
     uint8_t relayIndex;
-    std::vector<uint16_t> sourceList;
+    std::vector<NwkShortAddress> sourceList;
 
 
 };

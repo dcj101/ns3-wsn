@@ -31,7 +31,7 @@ WsnAddressAllocator::SetWsnAddressAllocator(uint16_t n, uint16_t r, uint8_t d)
 }
 // 0 终端节点， 1路由器节点
 uint16_t 
-WsnAddressAllocator::AllocateAddress(uint8_t depth, bool node_type, uint16_t Aparent) 
+WsnAddressAllocator::AllocateNwkAddress(uint8_t depth, bool node_type, uint16_t Aparent) 
 {
     if (depth > m_d) 
     {
@@ -56,6 +56,37 @@ WsnAddressAllocator::AllocateAddress(uint8_t depth, bool node_type, uint16_t Apa
     }
     return address;
 }
+
+std::string 
+WsnAddressAllocator::AllocateRandMac48Address()
+{
+    srand(time(NULL));
+    std::stringstream mac;
+    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256) << ":";
+    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256) << ":";
+    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256) << ":";
+    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256) << ":";
+    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256) << ":";
+    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256);
+    if(m_macSet.find(mac.str()) != m_macSet.end()) return AllocateRandMac48Address();
+    m_macSet.insert(mac.str());
+    return mac.str();
+}
+
+std::string 
+WsnAddressAllocator::AnalysisMac48AddresstoEUI64 (const std::string& mac48) const
+{
+    EUI64Converter eui64;
+    return eui64.toEUI64(mac48);
+}
+
+std::string
+WsnAddressAllocator::AnalysisEUI64ToMac48Address (const std::string& eui) const
+{
+    EUI64Converter eui64;
+    return eui64.toMAC48(eui);
+}
+
 
 uint16_t 
 WsnAddressAllocator::GetMaxAddress() const 

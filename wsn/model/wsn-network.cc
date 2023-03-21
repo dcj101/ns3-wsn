@@ -15,11 +15,36 @@ WsnNwkProtocol::GetTypeId (void)
     return tid;
 }
 
-NwkHeader 
-WsnNwkProtocol::BuildHeader(NwkShortAddress addr)
+void 
+WsnNwkProtocol::SendData(NwkShortAddress dstaddr,Ptr<Packet> packet)
 {
-    
-    return NwkHeader();
+  NwkHeader nwkHeader;
+  nwkHeader.SetDestAddr(dstaddr);
+  nwkHeader.SetSourceAddr(m_addr);
+  packet->AddHeader(nwkHeader);
+  
+  McpsDataRequestParams params;
+  
+  if(m_ack) 
+    params.m_txOptions = TX_OPTION_ACK;
+  
+  params.m_srcAddrMode = EXT_ADDR;
+  params.m_dstAddrMode = EXT_ADDR;
+  
+  NwkShortAddress nextHop = m_rtable.Lookup(dstaddr);
+  
+  if(nextHop.GetAddressU16() == 0x0000)
+      nextHop = m_route;
+  
+  NeighborTable::NeighborEntry nextNeight = m_ntable.GetNeighborEntry(nextHop.GetAddressU16());
+
+  std::string extAddr64 = WsnAddressAllocator::Get ()->FormatOutPut(nextNeight.extendedAddr,7);
+  std::string extAddr48 = WsnAddressAllocator::Get ()->toMAC48(extAddr64);
+  params.m_dstExtAddr = Mac48Address(extAddr48.c_str());
+
+  
+
+  return;
 }
 
 void
@@ -57,7 +82,7 @@ WsnNwkProtocol::Assign(Ptr<LrWpanNetDevice> netDevice, NwkShortAddress addr)
 }
 
 void 
-WsnNwkProtocol::SetNodeType(uint8_t type)
+WsnNwkProtocol::SetNodeType(NODE_TYPE type)
 {
   m_nodeType = type;
 }
@@ -73,6 +98,12 @@ WsnNwkProtocol::SetNode(Ptr<Node> node)
 {
     NS_LOG_FUNCTION (this << node);
     m_node = node;
+}
+
+void
+WsnNwkProtocol::SetAck(bool ack)
+{
+  m_ack = ack;
 }
 
 void 
@@ -93,26 +124,25 @@ WsnNwkProtocol::NotifyNewAggregate (void)
 void 
 WsnNwkProtocol::DoInitialize (void)
 {
-    MlmeStartConfirmCallback cb0;
-    cb0 = MakeCallback (&StartConfirm);
-    m_netDevice->GetMac ()->SetMlmeStartConfirmCallback (cb0);
+    if(m_nodeType == NODE_TYPE::COOR)
+    {
+      cb4 = MakeCallback (&DataIndicationCoordinator);
+      m_netDevice->GetMac ()->SetMcpsDataIndicationCallback (cb4);
 
-    
-    McpsDataConfirmCallback cb1;
-    cb1 = MakeCallback (&TransEndIndication);
-    m_netDevice->GetMac ()->SetMcpsDataConfirmCallback (cb1);
+      cb0 = MakeCallback (&StartConfirm);
+      m_netDevice->GetMac ()->SetMlmeStartConfirmCallback (cb0);
+    } 
+    else if(m_nodeType == NODE_TYPE::EDGE)
+    {
+      cb4 = MakeCallback (&DataIndication);
+      m_netDevice->GetMac ()->SetMcpsDataIndicationCallback (cb4);
 
-    MlmeBeaconNotifyIndicationCallback cb3;
-    cb3 = MakeCallback (&BeaconIndication);
-    m_netDevice->GetMac ()->SetMlmeBeaconNotifyIndicationCallback (cb3);
+      cb1 = MakeCallback (&TransEndIndication);
+      m_netDevice->GetMac ()->SetMcpsDataConfirmCallback (cb1);
 
-    McpsDataIndicationCallback cb4;
-    cb4 = MakeCallback (&DataIndication);
-    m_netDevice->GetMac ()->SetMcpsDataIndicationCallback (cb4);
-
-    McpsDataIndicationCallback cb5;
-    cb5 = MakeCallback (&DataIndicationCoordinator);
-    m_netDevice->GetMac ()->SetMcpsDataIndicationCallback (cb5);
+      cb3 = MakeCallback (&BeaconIndication);
+      m_netDevice->GetMac ()->SetMlmeBeaconNotifyIndicationCallback (cb3);
+    } 
 
 }
 

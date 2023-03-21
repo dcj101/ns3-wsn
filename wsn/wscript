@@ -12,6 +12,7 @@ def build(bld):
         'model/wsn-nwk-short-address.cc',
         'model/wsn-address-allocator.cc',
         'model/wsn-network.cc',
+        'model/wsn-neighbor-table.cc',
         'helper/wsn-helper.cc',
         ]
     
@@ -27,6 +28,7 @@ def build(bld):
         'model/wsn-nwk-short-address.h',
         'model/wsn-address-allocator.h',
         'model/wsn-network.h',
+        'model/wsn-neighbor-table.h',
         'helper/wsn-helper.h',
         ]
 

@@ -9,14 +9,12 @@ NS_LOG_COMPONENT_DEFINE ("NwkHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (NwkFrame);
 
-NwkFrame::NwkFrame ()
+NwkFrame::NwkFrame ():m_frameControl(0)
 {
- 
 }
 
 NwkFrame::~NwkFrame ()
 {
-  
 }
 
 TypeId
@@ -32,6 +30,12 @@ TypeId
 NwkFrame::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
+}
+
+NwkFrame::FrameType 
+NwkFrame::GetType(void) const
+{
+  return static_cast<FrameType>(m_frameControl & 0x3);
 }
 
 void
@@ -63,6 +67,19 @@ NwkFrame::Deserialize (Buffer::Iterator start)
 
 NS_OBJECT_ENSURE_REGISTERED (NwkHeader);
 
+NwkHeader::NwkHeader()
+:radius(0), 
+destAddrIEEE(0),
+sourceAddrIEEE(0), 
+multicastContral(0), 
+relayCount(0), 
+relayIndex(0) {
+      Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+      x->SetAttribute ("Min", DoubleValue (0.0));
+      x->SetAttribute ("Max", DoubleValue (10000.0));
+      seqNum = x->GetInteger ();
+}
+
 TypeId
 NwkHeader::GetTypeId (void)
 {
@@ -77,6 +94,14 @@ NwkHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
+
+NwkFrame::FrameType 
+NwkHeader::GetType(void) const
+{
+  return nwkframe.GetType();
+}
+
+
 
 void
 NwkHeader::Print(std::ostream &os) const {
@@ -100,56 +125,51 @@ NwkHeader::Print(std::ostream &os) const {
 uint32_t
 NwkHeader::GetSerializedSize() const
 {
-  return 8;
+  return 5 + nwkframe.GetSerializedSize();
 }
-
-/*
-    uint16_t destAddr;
-    uint16_t sourceAddr;
-    uint8_t radius;
-    uint8_t seqNum;
-    uint16_t destAddrIEEE;
-    uint16_t sourceAddrIEEE;
-    uint8_t multicastContral;
-    uint8_t relayCount;
-    uint8_t relayIndex;
-*/
 
 void
 NwkHeader::Serialize(Buffer::Iterator start) const
 {
+  
   nwkframe.Serialize(start);
-  start.WriteU8(destAddr);
-  start.WriteU8(sourceAddr);
-  start.WriteU8(radius);
-  start.WriteU8(seqNum);
-  start.WriteU16(destAddrIEEE);
-  start.WriteU16(sourceAddrIEEE);
-  start.WriteU8(multicastContral);
-  start.WriteU8(relayCount);
-  start.WriteU8(relayIndex);
-  for(std::vector<uint16_t>::const_iterator it = sourceList.begin(); it != sourceList.end(); it ++)
+  if(nwkframe.GetType() == NwkFrame::NWK_FRAME_DATA)
   {
-      start.WriteU16(*it);
+    start.WriteU16(destAddr.GetAddressU16());
+    start.WriteU16(sourceAddr.GetAddressU16());
+    start.WriteU8(seqNum);
   }
+  
+
+  // start.WriteU8(radius); 
+  // start.WriteU64(destAddrIEEE);
+  // start.WriteU64(sourceAddrIEEE);
+  // start.WriteU8(multicastContral);
+  // start.WriteU8(relayCount);
+  // start.WriteU8(relayIndex);
+  // for(std::vector<NwkShortAddress>::const_iterator it = sourceList.begin(); it != sourceList.end(); it ++)
+  // {
+  //     start.WriteU16((*it).GetAddressU16());
+  // }
 }
 
 uint32_t 
 NwkHeader::Deserialize (Buffer::Iterator start)
 {
   nwkframe.Deserialize(start);
-  destAddr = start.ReadU8();
-  sourceAddr = start.ReadU8();
-  radius = start.ReadU8();
+  destAddr = static_cast<NwkShortAddress>(start.ReadU16());
+  sourceAddr = static_cast<NwkShortAddress>(start.ReadU16());
   seqNum = start.ReadU8();
-  destAddrIEEE = start.ReadU16();
-  sourceAddrIEEE = start.ReadU16();
-  multicastContral = start.ReadU8();
-  relayCount = start.ReadU8();
-  relayIndex = start.ReadU8();
-  for(int i = 0; i < relayCount; ++ i) 
-    sourceList.push_back(static_cast<uint16_t>(start.ReadU16()));
-  return GetSerializedSize()+nwkframe.GetSerializedSize();
+
+  // radius = start.ReadU8();
+  // destAddrIEEE = start.ReadU64();
+  // sourceAddrIEEE = start.ReadU64();
+  // multicastContral = start.ReadU8();
+  // relayCount = start.ReadU8();
+  // relayIndex = start.ReadU8();
+  // for(int i = 0; i < relayCount; ++ i) 
+  //   sourceList.push_back(static_cast<NwkShortAddress>(start.ReadU16()));
+  return GetSerializedSize();
 }
 
 

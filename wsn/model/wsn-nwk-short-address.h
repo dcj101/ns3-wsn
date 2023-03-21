@@ -18,6 +18,8 @@ class NwkShortAddress
 public:
   NwkShortAddress ();
 
+  NwkShortAddress(uint16_t);
+
   NwkShortAddress (const char *str);
 
   void CopyFrom (const uint8_t buffer[2]);
@@ -38,7 +40,7 @@ public:
 
   bool IsMulticast (void) const;
 
-  uint16_t GetAddress(void) const;
+  uint16_t GetAddressU16(void) const;
 
 private:
 
