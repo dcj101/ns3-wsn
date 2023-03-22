@@ -36,6 +36,8 @@ class WsnNwkProtocol : public Object
 
     WsnNwkProtocol();
 
+    WsnNwkProtocol(NODE_TYPE type);
+
     static TypeId GetTypeId (void);
     
     void Send(NwkShortAddress sourceaddr,NwkShortAddress dstAddr, Ptr<Packet> packet, NwkHeader::FrameType ftype);
@@ -62,7 +64,9 @@ class WsnNwkProtocol : public Object
 
     NeighborTable* GetNeighborTable();
 
-    void JoinRequest(NODE_TYPE type, Ptr<WsnNwkProtocol> parents);
+    void SetCallbackSet();
+
+    void JoinRequest(Ptr<WsnNwkProtocol> parents);
 
     void BeaconIndication (MlmeBeaconNotifyIndicationParams params, Ptr<Packet> p);
 

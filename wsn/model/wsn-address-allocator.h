@@ -11,6 +11,8 @@
 #include <iomanip>
 #include <unordered_map>
 
+#include "ns3/double.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/type-id.h"
 #include "ns3/log.h"
 #include "ns3/singleton.h"

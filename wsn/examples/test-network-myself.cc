@@ -20,6 +20,7 @@ int main()
   LogComponentEnable ("LrWpanMac", LOG_LEVEL_ALL);
   LogComponentEnable ("LrWpanCsmaCa", LOG_LEVEL_ALL);
   LogComponentEnable ("LrWpanNetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable ("WsnNwkProtocol", LOG_LEVEL_ALL);
   LogComponentEnable ("Node", LOG_LEVEL_ALL);
 
   // 设置入网分配器的分配规则
@@ -39,11 +40,29 @@ int main()
   string mac480 = WsnAddressAllocator::Get ()->AllocateRandMac48Address();
   string mac481 = WsnAddressAllocator::Get ()->AllocateRandMac48Address();
 
-  dev0->GetMac()->SetExtendedAddress (Mac64Address (mac480.c_str()));
-  dev1->GetMac()->SetExtendedAddress (Mac64Address (mac481.c_str()));
+  string mac640 = WsnAddressAllocator::Get ()->AnalysisMac48AddresstoEUI64(mac480);
+  string mac641 = WsnAddressAllocator::Get ()->AnalysisMac48AddresstoEUI64(mac481);
 
-  Ptr<WsnNwkProtocol> nwk0 = CreateObject<WsnNwkProtocol>();
-  Ptr<WsnNwkProtocol> nwk1 = CreateObject<WsnNwkProtocol>();
+  dev0->GetMac()->SetExtendedAddress (Mac64Address (mac640.c_str()));
+  dev1->GetMac()->SetExtendedAddress (Mac64Address (mac641.c_str()));
+
+  Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel> ();
+  // 距离传输模型
+  Ptr<LogDistancePropagationLossModel> propModel = CreateObject<LogDistancePropagationLossModel> ();
+  // 介质传输模型 
+  Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
+  channel->AddPropagationLossModel (propModel);
+  channel->SetPropagationDelayModel (delayModel);
+
+  dev0->SetChannel (channel);
+  dev1->SetChannel (channel);
+  // dev2->SetChannel (channel);
+
+  Ptr<WsnNwkProtocol> nwk0 = CreateObject<WsnNwkProtocol>(NODE_TYPE::COOR);
+  Ptr<WsnNwkProtocol> nwk1 = CreateObject<WsnNwkProtocol>(NODE_TYPE::EDGE);
+
+  nwk0->Assign(dev0);
+  nwk1->Assign(dev1);
 
   n0->AddDevice (dev0);
   n1->AddDevice (dev1);
@@ -51,18 +70,19 @@ int main()
   nwk0->Install(n0);
   nwk1->Install(n1);
 
-  Simulator::Schedule(Seconds(0.0),&WsnNwkProtocol::JoinRequest(),
-                      nwk0,NODE_TYPE::COOR,NULL);
+
+
+  Simulator::Schedule(Seconds(0.5),&WsnNwkProtocol::JoinRequest,
+                      nwk0,nwk1);
   // nwk0->JoinRequest(NODE_TYPE::COOR,NULL);
-  Simulator::Schedule(Seconds(1.0),&WsnNwkProtocol::JoinRequest(),
-                      nwk1,NODE_TYPE::EDGE,nwk1);
+  Simulator::Schedule(Seconds(2.0),&WsnNwkProtocol::JoinRequest,
+                      nwk1,nwk0);
   // nwk1->JoinRequest(NODE_TYPE::EDGE,nwk1);
 
   Simulator::Run ();
   Simulator::Destroy ();
 
-  
-//   Ptr<''>
+  return 0;
 
 }
 

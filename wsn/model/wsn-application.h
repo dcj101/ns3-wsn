@@ -10,6 +10,8 @@
 #include "ns3/node.h"
 #include "ns3/application.h"
 #include "ns3/core-module.h"
+#include "ns3/random-variable-stream.h"
+
 
 #include "wsn-nwk-short-address.h"
 #include "wsn-application-header.h"

@@ -60,16 +60,19 @@ WsnAddressAllocator::AllocateNwkAddress(uint8_t depth, bool node_type, uint16_t 
 std::string 
 WsnAddressAllocator::AllocateRandMac48Address()
 {
-    srand(time(NULL));
+    Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+    x->SetAttribute ("Min", DoubleValue (0.0));
+    x->SetAttribute ("Max", DoubleValue (10000.0));
     std::stringstream mac;
-    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256) << ":";
-    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256) << ":";
-    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256) << ":";
-    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256) << ":";
-    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256) << ":";
-    mac << std::setfill('0') << std::setw(2) << std::hex << (rand() % 256);
+    mac << std::setfill('0') << std::setw(2) << std::hex << ((x->GetInteger ()) % 256) << ":";
+    mac << std::setfill('0') << std::setw(2) << std::hex << ((x->GetInteger ()) % 256) << ":";
+    mac << std::setfill('0') << std::setw(2) << std::hex << ((x->GetInteger ()) % 256) << ":";
+    mac << std::setfill('0') << std::setw(2) << std::hex << ((x->GetInteger ()) % 256) << ":";
+    mac << std::setfill('0') << std::setw(2) << std::hex << ((x->GetInteger ()) % 256) << ":";
+    mac << std::setfill('0') << std::setw(2) << std::hex << ((x->GetInteger ()) % 256);
     if(m_macSet.find(mac.str()) != m_macSet.end()) return AllocateRandMac48Address();
     m_macSet.insert(mac.str());
+    std::cout << mac.str() << " \n";
     return mac.str();
 }
 
