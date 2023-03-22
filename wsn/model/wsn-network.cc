@@ -49,7 +49,8 @@ WsnNwkProtocol::Send(NwkShortAddress sourceaddr, NwkShortAddress dstaddr,Ptr<Pac
   
   if(m_ack) 
     params.m_txOptions = TX_OPTION_ACK;
-  
+  params.m_dstPanId = 1;
+  params.m_msduHandle = 0;
   params.m_srcAddrMode = EXT_ADDR;
   params.m_dstAddrMode = EXT_ADDR;
   
@@ -61,7 +62,7 @@ WsnNwkProtocol::Send(NwkShortAddress sourceaddr, NwkShortAddress dstaddr,Ptr<Pac
   NeighborTable::NeighborEntry nextNeight = m_ntable.GetNeighborEntry(nextHop.GetAddressU16());
 
   params.m_dstExtAddr = nextNeight.extendedAddr;
-
+  NS_LOG_FUNCTION(this << " Send dst extmac" << params.m_dstExtAddr );
   Simulator::Schedule(Seconds(0.0),
                       &LrWpanMac::McpsDataRequest,
                       m_netDevice->GetMac(),params,packet);
@@ -110,7 +111,7 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
   NS_LOG_FUNCTION(this << " " << wsnNwkProtocol);
   uint8_t depth;
   uint8_t panid;
- 
+  
   MlmeStartRequestParams params;
   NeighborTable* ntable;
   NwkShortAddress parents;
@@ -139,13 +140,14 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
     depth = wsnNwkProtocol->GetDepth();
     panid = wsnNwkProtocol->GetPanID();
   }
+  NS_LOG_FUNCTION(this << panid << " mypanid" );
   uint16_t addr;
 
   switch(m_nodeType)
   {
     case NODE_TYPE::EDGE :
       params.m_panCoor = false;
-      params.m_PanId = 1;
+      params.m_PanId = panid;
       m_netDevice->GetMac ()->SetPanId (panid);
       m_netDevice->GetMac ()->SetAssociatedCoor(netDevice->GetMac()
                                                           ->GetAssociatedMac64AddressCoor());
@@ -159,13 +161,13 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
     case NODE_TYPE::COOR :
       params.m_panCoor = true;
       params.m_PanId = 1;
-      // params.m_sfrmOrd = 6;
+      panid = params.m_PanId;
       m_addr = std::move(NwkShortAddress("00:00"));
       m_depth = 0;
     break;
     case NODE_TYPE::ROUTE :
       params.m_panCoor = false;
-      params.m_PanId = 1;
+      params.m_PanId = panid;
       m_netDevice->GetMac ()->SetPanId (panid);
       m_netDevice->GetMac ()->SetAssociatedCoor(netDevice->GetMac()
                                                           ->GetAssociatedMac64AddressCoor());
@@ -179,6 +181,7 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
       break;
   }
   params.m_bcnOrd = 15; // 非时隙
+  m_panId = panid;
   Simulator::Schedule(Seconds(0.0),&LrWpanMac::MlmeStartRequest,
                         this->m_netDevice->GetMac(),params);
   SetCallbackSet();
@@ -204,6 +207,7 @@ WsnNwkProtocol::SetAck(bool ack)
 uint8_t
 WsnNwkProtocol::GetPanID()
 {
+  NS_LOG_FUNCTION(this << " getmypanID" << m_panId);
   return m_panId;
 }
 
