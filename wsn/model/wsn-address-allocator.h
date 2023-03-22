@@ -22,6 +22,18 @@ class WsnAddressAllocator : public Singleton<WsnAddressAllocator>{
 public:
     class EUI64Converter {
         public:
+            std::string FormatOutPut(uint64_t value, uint8_t offset) const {
+                std::stringstream sst;
+                sst << std::hex << std::setfill('0');
+                for (int i = offset; i >= 0; i--) {
+                    sst << std::setw(2) << ((value >> (i * 8)) & 0xFF);
+                    if (i > 0) {
+                        sst << ":";
+                    }
+                }
+                return sst.str();
+            }
+
             std::string toEUI64(const std::string& mac) const {
                 uint64_t value = 0;
                 std::stringstream ss(mac);
@@ -56,18 +68,6 @@ public:
                 value = (value & 0xFFFFFFULL) | ((value & 0xFFFFFF0000000000ULL) >> 16);
                 return FormatOutPut(value,5);
             }
-
-            std::string FormatOutPut(uint64_t value, uint8_t offset) {
-                std::stringstream sst;
-                sst << std::hex << std::setfill('0');
-                for (int i = offset; i >= 0; i--) {
-                    sst << std::setw(2) << ((value >> (i * 8)) & 0xFF);
-                    if (i > 0) {
-                        sst << ":";
-                    }
-                }
-                return sst.str();
-            }
     };
 
     static TypeId GetTypeId (void);
@@ -83,6 +83,8 @@ public:
     std::string AnalysisMac48AddresstoEUI64 (const std::string& mac48) const;
 
     std::string AnalysisEUI64ToMac48Address (const std::string& eui) const;
+
+    std::string FormatOutPut(uint64_t value, uint8_t offset) const;
 
     uint16_t GetMaxAddress() const;
     

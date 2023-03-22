@@ -15,3 +15,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('test-addressEUI64',['wsn','core'])
     obj.source = 'test-addressEUI64.cc'
+
+    obj = bld.create_ns3_program('test-network-myself',['wsn','core'])
+    obj.source = 'test-network-myself.cc'

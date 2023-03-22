@@ -17,6 +17,8 @@
 #include "wsn-nwk-short-address.h"
 #include "wsn-route.h"
 
+#include <utility>
+
 namespace ns3
 {
 
@@ -32,6 +34,8 @@ class WsnNwkProtocol : public Object
 {
     public:
 
+    WsnNwkProtocol();
+
     static TypeId GetTypeId (void);
     
     void SendData(NwkShortAddress dstAddr, Ptr<Packet> packet);
@@ -42,13 +46,25 @@ class WsnNwkProtocol : public Object
 
     void Assign(Ptr<LrWpanNetDevice> netDevice, NwkShortAddress addr);
 
-    void SetNodeType(NODE_TYPE type);
-
-    void SetDepth(uint8_t type);
+    
     
     void SetNode(Ptr<Node> node);
 
     void SetAck(bool ack);
+
+    uint8_t GetPanID();
+
+    uint8_t GetDepth();
+
+    NwkShortAddress GetNwkShortAddress();
+
+    Ptr<LrWpanNetDevice> GetLrWpanNetDevice();
+
+    RoutingTable* GetRoutingTable();
+
+    NeighborTable* GetNeighborTable();
+
+    void JoinRequest(NODE_TYPE type, Ptr<WsnNwkProtocol> parents);
 
     static void BeaconIndication (MlmeBeaconNotifyIndicationParams params, Ptr<Packet> p)
     {
@@ -58,6 +74,7 @@ class WsnNwkProtocol : public Object
     static void DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
     {
         NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize ());
+        
     }
 
     static void TransEndIndication (McpsDataConfirmParams params)
@@ -96,6 +113,7 @@ class WsnNwkProtocol : public Object
 
     void CreateAndAggregateObjectFromTypeId(Ptr<Node> node, const std::string typeId);
 
+    
 
     Ptr<LrWpanNetDevice> m_netDevice;
 
@@ -111,17 +129,19 @@ class WsnNwkProtocol : public Object
 
     NODE_TYPE m_nodeType;
 
+    uint8_t m_panId;
+
     uint8_t m_depth;
 
     bool m_ack;
 
-    MlmeStartConfirmCallback cb0;
+    MlmeStartConfirmCallback m_MlmeStartConfirmCallback;
 
-    McpsDataConfirmCallback cb1;
+    McpsDataConfirmCallback m_McpsDataConfirmCallback;
     
-    MlmeBeaconNotifyIndicationCallback cb3;
+    MlmeBeaconNotifyIndicationCallback m_MlmeBeaconNotifyIndicationCallback;
     
-    McpsDataIndicationCallback cb4;
+    McpsDataIndicationCallback m_McpsDataIndicationCallback;
 };  
 
 }

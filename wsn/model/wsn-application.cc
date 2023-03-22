@@ -19,7 +19,7 @@ WsnApplication::GetTypeId (void)
 
 WsnApplication::WsnApplication()
 {
-  m_point = 0;
+  m_point = 1;
 }
 
 WsnApplication::~WsnApplication()
@@ -31,13 +31,19 @@ void
 WsnApplication::SendData()
 {
   NS_LOG_FUNCTION (this);
+
+  Ptr<Packet> m_packet;
+
   AppHeader appHeader;
+  
   m_packet->AddHeader(appHeader);
   
   WsnSensorTag sensor;
   m_packet->AddPacketTag(sensor);
   
+  Ptr<WsnNwkProtocol> wsnnwk = m_node->GetObject<WsnNwkProtocol> ();
 
+  wsnnwk->SendData(m_peerAddr,m_packet);
 }
 
 void 

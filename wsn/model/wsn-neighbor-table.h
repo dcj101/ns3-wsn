@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <vector>
 #include <stdexcept>
+#ifndef WSN_NEIGHBOR_H
+#define WSN_NEIGHBOR_H
 
 namespace ns3 {
 
@@ -55,4 +57,5 @@ private:
 
 } // namespace ns3
 
+#endif
 

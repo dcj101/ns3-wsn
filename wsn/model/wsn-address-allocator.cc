@@ -87,6 +87,12 @@ WsnAddressAllocator::AnalysisEUI64ToMac48Address (const std::string& eui) const
     return eui64.toMAC48(eui);
 }
 
+std::string
+WsnAddressAllocator::FormatOutPut(uint64_t value, uint8_t offset) const
+{
+    EUI64Converter eui64;
+    return eui64.FormatOutPut(value,offset);
+}
 
 uint16_t 
 WsnAddressAllocator::GetMaxAddress() const 

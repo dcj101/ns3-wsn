@@ -74,6 +74,9 @@ public:
     uint32_t Deserialize (Buffer::Iterator start) override;
 
     NwkFrame::FrameType GetType(void) const;
+    NwkFrame::FrameType SetType(void) const;
+
+
 
 
 private:

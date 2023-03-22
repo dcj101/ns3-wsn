@@ -61,8 +61,6 @@ private:
 
     Ptr<Node> m_node;
 
-    Ptr<Packet> m_packet;
-
     NwkShortAddress m_peerAddr;
 
     uint8_t m_point;

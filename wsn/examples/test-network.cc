@@ -119,9 +119,9 @@ int main (int argc, char *argv[])
   Ptr<LrWpanNetDevice> dev1 = CreateObject<LrWpanNetDevice> ();
   Ptr<LrWpanNetDevice> dev2 = CreateObject<LrWpanNetDevice> ();
 
-  dev0->SetAddress (Mac64Address ("00:00:00:00:00:01"));
-  dev1->SetAddress (Mac64Address ("00:00:00:00:00:02"));
-  dev2->SetAddress (Mac64Address ("00:00:00:00:00:03"));
+  dev0->GetMac()->SetExtendedAddress (Mac64Address ("00:00:00:00:00:00:00:01"));
+  dev1->GetMac()->SetExtendedAddress (Mac64Address ("00:00:00:00:00:00:00:02"));
+  dev2->GetMac()->SetExtendedAddress (Mac64Address ("00:00:00:00:00:00:00:03"));
   // 设置信道属性
   Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel> ();
   // 距离传输模型
@@ -149,9 +149,9 @@ int main (int argc, char *argv[])
   dev1->GetPhy ()->SetMobility (sender1Mobility);
 
 
-  Ptr<ConstantPositionMobilityModel> sender2Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  sender1Mobility->SetPosition (Vector (10,10,0)); //10 m distance
-  dev2->GetPhy ()->SetMobility (sender1Mobility);
+  // Ptr<ConstantPositionMobilityModel> sender2Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  // sender1Mobility->SetPosition (Vector (10,10,0)); //10 m distance
+  // dev2->GetPhy ()->SetMobility (sender1Mobility);
 
   /////// MAC layer Callbacks hooks/////////////
 
@@ -172,11 +172,11 @@ int main (int argc, char *argv[])
   dev1->GetMac ()->SetMcpsDataIndicationCallback (cb4);
 
 
-  dev2->GetMac ()->SetMcpsDataConfirmCallback (cb1);
+  // dev2->GetMac ()->SetMcpsDataConfirmCallback (cb1);
 
-  dev2->GetMac ()->SetMlmeBeaconNotifyIndicationCallback (cb3);
+  // dev2->GetMac ()->SetMlmeBeaconNotifyIndicationCallback (cb3);
 
-  dev2->GetMac ()->SetMcpsDataIndicationCallback (cb4);
+  // dev2->GetMac ()->SetMcpsDataIndicationCallback (cb4);
 
 
   McpsDataIndicationCallback cb5;
@@ -193,11 +193,11 @@ int main (int argc, char *argv[])
   //       by the MLME-start.request primitive when used.
 
   dev1->GetMac ()->SetPanId (5);
-  dev1->GetMac ()->SetAssociatedCoor (Mac64Address ("00:00:00:00:00:01"));
+  dev1->GetMac ()->SetAssociatedCoor (Mac64Address ("00:00:00:00:00:00:00:01"));
 
 
   dev2->GetMac ()->SetPanId (5);
-  dev2->GetMac ()->SetAssociatedCoor (Mac64Address ("00:00:00:00:00:01"));
+  dev2->GetMac ()->SetAssociatedCoor (Mac64Address ("00:00:00:00:00:00:00:01"));
 
   ///////////////////// Start transmitting beacons from coordinator ////////////////////////
 
@@ -217,7 +217,7 @@ int main (int argc, char *argv[])
   params2.m_dstPanId = 5;
   params2.m_srcAddrMode = EXT_ADDR;
   params2.m_dstAddrMode = EXT_ADDR;
-  params2.m_dstExtAddr = Mac64Address ("00:00:00:00:00:01");
+  params2.m_dstExtAddr = Mac64Address ("00:00:00:00:00:00:00:01");
   params2.m_msduHandle = 0;
   params2.m_txOptions = TX_OPTION_ACK;  // Enable direct transmission with Ack
 
@@ -236,9 +236,9 @@ int main (int argc, char *argv[])
 
   // MCPS-DATA.request Beacon enabled Direct Transmission (dev1)
   // Frame transmission from End Device to Coordinator (Direct transmission)
-  Simulator::ScheduleWithContext (1, Seconds (4.0),
+  Simulator::ScheduleWithContext (1, Seconds (4.9),
                                   &LrWpanMac::McpsDataRequest,
-                                  dev0->GetMac (), params2, p1);
+                                 dev1->GetMac (), params2, p1);
 
 
   Simulator::Stop (Seconds (600));
