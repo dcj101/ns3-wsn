@@ -38,15 +38,13 @@ class WsnNwkProtocol : public Object
 
     static TypeId GetTypeId (void);
     
-    void SendData(NwkShortAddress dstAddr, Ptr<Packet> packet);
+    void Send(NwkShortAddress sourceaddr,NwkShortAddress dstAddr, Ptr<Packet> packet, NwkHeader::FrameType ftype);
 
     void BuildRtable(std::vector<StaticRoute> &rtable);
 
     void Install(Ptr<Node> node);
 
-    void Assign(Ptr<LrWpanNetDevice> netDevice, NwkShortAddress addr);
-
-    
+    void Assign(Ptr<LrWpanNetDevice> netDevice);
     
     void SetNode(Ptr<Node> node);
 
@@ -66,37 +64,15 @@ class WsnNwkProtocol : public Object
 
     void JoinRequest(NODE_TYPE type, Ptr<WsnNwkProtocol> parents);
 
-    static void BeaconIndication (MlmeBeaconNotifyIndicationParams params, Ptr<Packet> p)
-    {
-        NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " secs | Received BEACON packet of size " << p->GetSize ());
-    }
+    void BeaconIndication (MlmeBeaconNotifyIndicationParams params, Ptr<Packet> p);
 
-    static void DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
-    {
-        NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize ());
-        
-    }
+    void DataIndication (McpsDataIndicationParams params, Ptr<Packet> p);
 
-    static void TransEndIndication (McpsDataConfirmParams params)
-    {
-        if (params.m_status == LrWpanMcpsDataConfirmStatus::IEEE_802_15_4_SUCCESS)
-        {
-            NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " secs | Transmission successfully sent");
-        }
-    }
+    void TransEndIndication (McpsDataConfirmParams params);
 
-    static void DataIndicationCoordinator (McpsDataIndicationParams params, Ptr<Packet> p)
-    {
-        NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s Coordinator Received DATA packet (size " << p->GetSize () << " bytes)");
-    }
+    void DataIndicationCoordinator (McpsDataIndicationParams params, Ptr<Packet> p);
 
-    static void StartConfirm (MlmeStartConfirmParams params)
-    {
-        if (params.m_status == MLMESTART_SUCCESS)
-        {
-            NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "Beacon status SUCESSFUL");
-        }
-    }
+    void StartConfirm (MlmeStartConfirmParams params);
 
 
 
@@ -113,7 +89,6 @@ class WsnNwkProtocol : public Object
 
     void CreateAndAggregateObjectFromTypeId(Ptr<Node> node, const std::string typeId);
 
-    
 
     Ptr<LrWpanNetDevice> m_netDevice;
 

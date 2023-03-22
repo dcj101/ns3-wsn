@@ -19,7 +19,7 @@ NeighborTable::GetNeighborEntries() const {
 }
 
 NeighborTable::NeighborEntry 
-NeighborTable::GetNeighborEntry(uint16_t networkAddr) const {
+NeighborTable::GetNeighborEntry(NwkShortAddress networkAddr) const {
   // find and return the neighbor entry with the given network address
   for (auto& neighbor : m_neighbors) {
     if (neighbor.networkAddr == networkAddr) {
@@ -32,7 +32,7 @@ NeighborTable::GetNeighborEntry(uint16_t networkAddr) const {
 }
 
 bool 
-NeighborTable::HasNeighborEntry(uint16_t networkAddr) const {
+NeighborTable::HasNeighborEntry(NwkShortAddress networkAddr) const {
   // check if there is a neighbor entry with the given network address
   for (auto& neighbor : m_neighbors) {
     if (neighbor.networkAddr == networkAddr) {
@@ -43,7 +43,7 @@ NeighborTable::HasNeighborEntry(uint16_t networkAddr) const {
 }
 
 void 
-NeighborTable::RemoveNeighborEntry(uint16_t networkAddr) {
+NeighborTable::RemoveNeighborEntry(NwkShortAddress networkAddr) {
   // remove the neighbor entry with the given network address from the vector
   for (auto it = m_neighbors.begin(); it != m_neighbors.end(); ++it) {
     if (it->networkAddr == networkAddr) {
@@ -54,7 +54,7 @@ NeighborTable::RemoveNeighborEntry(uint16_t networkAddr) {
 }
 
 void 
-NeighborTable::SetExtendedAddress(uint16_t networkAddr, uint64_t extendedAddr) {
+NeighborTable::SetExtendedAddress(NwkShortAddress networkAddr, Mac64Address extendedAddr) {
   // set the extended address of the neighbor entry with the given network address
   for (auto& neighbor : m_neighbors) {
     if (neighbor.networkAddr == networkAddr) {
@@ -65,7 +65,7 @@ NeighborTable::SetExtendedAddress(uint16_t networkAddr, uint64_t extendedAddr) {
 }
 
 void 
-NeighborTable::SetDeviceType(uint16_t networkAddr, DeviceTypes deviceType) {
+NeighborTable::SetDeviceType(NwkShortAddress networkAddr, DeviceTypes deviceType) {
    // set the device type of the neighbor entry with the given network address
    for (auto& neighbor : m_neighbors) {
      if (neighbor.networkAddr == networkAddr) {
@@ -76,7 +76,7 @@ NeighborTable::SetDeviceType(uint16_t networkAddr, DeviceTypes deviceType) {
 }
 
 void 
-NeighborTable::SetRelationship(uint16_t networkAddr, Relationship relationship) {
+NeighborTable::SetRelationship(NwkShortAddress networkAddr, Relationship relationship) {
    // set the relationship of the neighbor entry with the given network address
    for (auto& neighbor : m_neighbors) {
      if (neighbor.networkAddr == networkAddr) { 
@@ -87,7 +87,7 @@ NeighborTable::SetRelationship(uint16_t networkAddr, Relationship relationship) 
 } 
 
 void 
-NeighborTable::SetRxOnWhenIdle(uint16_t networkAddr, bool rxOnWhenIdle)
+NeighborTable::SetRxOnWhenIdle(NwkShortAddress networkAddr, bool rxOnWhenIdle)
 { 
    // set the rx on when idle flag of the neighbor entry with the given 
    //network address 
@@ -104,7 +104,7 @@ NeighborTable::SetRxOnWhenIdle(uint16_t networkAddr, bool rxOnWhenIdle)
 
 
 void 
-NeighborTable::SetLinkQuality(uint16_t networkAddr, uint8_t linkQuality) {
+NeighborTable::SetLinkQuality(NwkShortAddress networkAddr, uint8_t linkQuality) {
   // loop through the vector and find the matching entry
   for (auto &entry : m_neighbors) {
     if (entry.networkAddr == networkAddr) {
@@ -115,8 +115,8 @@ NeighborTable::SetLinkQuality(uint16_t networkAddr, uint8_t linkQuality) {
   }
 }
 
-uint64_t 
-NeighborTable::GetExtendedAddress(uint16_t networkAddr) const {
+Mac64Address 
+NeighborTable::GetExtendedAddress(NwkShortAddress networkAddr) const {
   // loop through the vector and find the matching entry
   for (const auto &entry : m_neighbors) {
     if (entry.networkAddr == networkAddr) {
@@ -129,7 +129,7 @@ NeighborTable::GetExtendedAddress(uint16_t networkAddr) const {
 }
 
 DeviceTypes 
-NeighborTable::GetDeviceType(uint16_t networkAddr) const {
+NeighborTable::GetDeviceType(NwkShortAddress networkAddr) const {
   // loop through the vector and find the matching entry
   for (const auto &entry : m_neighbors) {
     if (entry.networkAddr == networkAddr) {
@@ -142,7 +142,7 @@ NeighborTable::GetDeviceType(uint16_t networkAddr) const {
 }
 
 Relationship 
-NeighborTable::GetRelationship(uint16_t networkAddr) const {
+NeighborTable::GetRelationship(NwkShortAddress networkAddr) const {
   // loop through the vector and find the matching entry
   for (const auto &entry : m_neighbors) {
     if (entry.networkAddr == networkAddr) {
@@ -155,7 +155,7 @@ NeighborTable::GetRelationship(uint16_t networkAddr) const {
 }
 
 bool 
-NeighborTable::GetRxOnWhenIdle(uint16_t networkAddr) const {
+NeighborTable::GetRxOnWhenIdle(NwkShortAddress networkAddr) const {
   // loop through the vector and find the matching entry
   for (const auto &entry : m_neighbors) {
     if (entry.networkAddr == networkAddr) {
@@ -168,7 +168,7 @@ NeighborTable::GetRxOnWhenIdle(uint16_t networkAddr) const {
 }
 
 uint8_t 
-NeighborTable::GetLinkQuality(uint16_t networkAddr) const {
+NeighborTable::GetLinkQuality(NwkShortAddress networkAddr) const {
    // loop through the vector and find the matching entry 
    for (const auto &entry : m_neighbors) { 
      if (entry.networkAddr == networkAddr) { 

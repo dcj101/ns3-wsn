@@ -1,8 +1,13 @@
+
+#ifndef WSN_NEIGHBOR_H
+#define WSN_NEIGHBOR_H
+
 #include <stdint.h>
 #include <vector>
 #include <stdexcept>
-#ifndef WSN_NEIGHBOR_H
-#define WSN_NEIGHBOR_H
+
+#include "wsn-nwk-short-address.h"
+#include "ns3/mac64-address.h"
 
 namespace ns3 {
 
@@ -23,8 +28,8 @@ enum class Relationship {
 class NeighborTable {
 public:
   struct NeighborEntry {
-    uint64_t extendedAddr;
-    uint16_t networkAddr;
+    Mac64Address extendedAddr;
+    NwkShortAddress networkAddr;
     DeviceTypes deviceType;
     Relationship relationship;
     bool rxOnWhenIdle;
@@ -35,21 +40,21 @@ public:
 
   void AddNeighborEntry(NeighborEntry neighbor);
   std::vector<NeighborEntry> GetNeighborEntries() const;
-  NeighborEntry GetNeighborEntry(uint16_t networkAddr) const;
-  bool HasNeighborEntry(uint16_t networkAddr) const;
-  void RemoveNeighborEntry(uint16_t networkAddr);
+  NeighborEntry GetNeighborEntry(NwkShortAddress networkAddr) const;
+  bool HasNeighborEntry(NwkShortAddress networkAddr) const;
+  void RemoveNeighborEntry(NwkShortAddress networkAddr);
 
-  void SetExtendedAddress(uint16_t networkAddr, uint64_t extendedAddr);
-  void SetDeviceType(uint16_t networkAddr, DeviceTypes deviceType);
-  void SetRelationship(uint16_t networkAddr, Relationship relationship);
-  void SetRxOnWhenIdle(uint16_t networkAddr, bool rxOnWhenIdle);
-  void SetLinkQuality(uint16_t networkAddr, uint8_t linkQuality);
+  void SetExtendedAddress(NwkShortAddress networkAddr, Mac64Address extendedAddr);
+  void SetDeviceType(NwkShortAddress networkAddr, DeviceTypes deviceType);
+  void SetRelationship(NwkShortAddress networkAddr, Relationship relationship);
+  void SetRxOnWhenIdle(NwkShortAddress networkAddr, bool rxOnWhenIdle);
+  void SetLinkQuality(NwkShortAddress networkAddr, uint8_t linkQuality);
 
-  uint64_t GetExtendedAddress(uint16_t networkAddr) const;
-  DeviceTypes GetDeviceType(uint16_t networkAddr) const;
-  Relationship GetRelationship(uint16_t networkAddr) const;
-  bool GetRxOnWhenIdle(uint16_t networkAddr) const;
-  uint8_t GetLinkQuality(uint16_t networkAddr) const;
+  Mac64Address GetExtendedAddress(NwkShortAddress networkAddr) const;
+  DeviceTypes GetDeviceType(NwkShortAddress networkAddr) const;
+  Relationship GetRelationship(NwkShortAddress networkAddr) const;
+  bool GetRxOnWhenIdle(NwkShortAddress networkAddr) const;
+  uint8_t GetLinkQuality(NwkShortAddress networkAddr) const;
 
 private:
   std::vector<NeighborEntry> m_neighbors;

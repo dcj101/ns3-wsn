@@ -15,10 +15,14 @@
 namespace ns3
 {
 
-
-class NwkFrame : public Header
+class NwkHeader : public Header
 {
+
 public:
+
+    NwkHeader();
+    
+    ~NwkHeader(){}
 
     enum FrameType
     {
@@ -63,75 +67,45 @@ public:
         NWK_FRAME_S_IS_CONTAIN = 0x01,
     };
 
-    NwkFrame();
-    ~NwkFrame();
-    static TypeId GetTypeId (void);
-
-    TypeId GetInstanceTypeId (void) const override;
-    void Print (std::ostream &os) const override;
-    uint32_t GetSerializedSize (void) const override;
-    void Serialize (Buffer::Iterator start) const override;
-    uint32_t Deserialize (Buffer::Iterator start) override;
-
-    NwkFrame::FrameType GetType(void) const;
-    NwkFrame::FrameType SetType(void) const;
-
-
-
-
-private:
-    uint16_t m_frameControl;
-};
-
-class NwkHeader : public Header
-{
-
-public:
-    
-
-    NwkHeader();
-    
-    ~NwkHeader(){}
-
     // Getter and setter for destAddr
-    void SetDestAddr(NwkShortAddress addr) { destAddr = addr; }
-    NwkShortAddress GetDestAddr() const { return destAddr; }
+    void SetDestAddr(NwkShortAddress addr) { m_destAddr = addr; }
+    NwkShortAddress GetDestAddr() const { return m_destAddr; }
     
     // Getter and setter for sourceAddr
-    void SetSourceAddr(NwkShortAddress addr) { sourceAddr = addr; }
-    NwkShortAddress GetSourceAddr() const { return sourceAddr; }
+    void SetSourceAddr(NwkShortAddress addr) { m_sourceAddr = addr; }
+    NwkShortAddress GetSourceAddr() const { return m_sourceAddr; }
     
     // Getter and setter for radius
-    void SetRadius(uint8_t rad) { radius = rad; }
-    uint8_t GetRadius() const { return radius; }
+    void SetRadius(uint8_t rad) { m_radius = rad; }
+    uint8_t GetRadius() const { return m_radius; }
     
     // Getter and setter for seqNum
-    void SetSeqNum(uint8_t seq) { seqNum = seq; }
-    uint8_t GetSeqNum() const { return seqNum; }
+    void SetSeqNum(uint8_t seq) { m_seqNum = seq; }
+    uint8_t GetSeqNum() const { return m_seqNum; }
     
     // Getter and setter for destAddrIEEE
-    void SetDestAddrIEEE(uint16_t addr) { destAddrIEEE = addr; }
-    uint16_t GetDestAddrIEEE() const { return destAddrIEEE; }
+    void SetDestAddrIEEE(uint64_t addr) { m_destAddrIEEE = addr; }
+    uint16_t GetDestAddrIEEE() const { return m_destAddrIEEE; }
     
     // Getter and setter for sourceAddrIEEE
-    void SetSourceAddrIEEE(uint16_t addr) { sourceAddrIEEE = addr; }
-    uint16_t GetSourceAddrIEEE() const { return sourceAddrIEEE; }
+    void SetSourceAddrIEEE(uint64_t addr) { m_sourceAddrIEEE = addr; }
+    uint16_t GetSourceAddrIEEE() const { return m_sourceAddrIEEE; }
     
     // Getter and setter for multicastContral
-    void SetMulticastContral(uint8_t control) { multicastContral = control; }
-    uint8_t GetMulticastContral() const { return multicastContral; }
+    void SetMulticastContral(uint8_t control) { m_multicastContral = control; }
+    uint8_t GetMulticastContral() const { return m_multicastContral; }
     
     // Getter and setter for relayCount
-    void SetRelayCount(uint8_t count) { relayCount = count; }
-    uint8_t GetRelayCount() const { return relayCount; }
+    void SetRelayCount(uint8_t count) { m_relayCount = count; }
+    uint8_t GetRelayCount() const { return m_relayCount; }
     
     // Getter and setter for relayIndex
-    void SetRelayIndex(uint8_t index) { relayIndex = index; }
-    uint8_t GetRelayIndex() const { return relayIndex; }
+    void SetRelayIndex(uint8_t index) { m_relayIndex = index; }
+    uint8_t GetRelayIndex() const { return m_relayIndex; }
     
     // Getter and setter for sourceList
-    void SetSourceList(const NwkShortAddress & list) { sourceList.push_back(list); }
-    std::vector<NwkShortAddress> GetSourceList() const { return sourceList; }
+    void SetSourceList(const NwkShortAddress & list) { m_sourceList.push_back(list); }
+    std::vector<NwkShortAddress> GetSourceList() const { return m_sourceList; }
 
     static TypeId GetTypeId (void);
 
@@ -141,21 +115,22 @@ public:
     void Serialize (Buffer::Iterator start) const override;
     uint32_t Deserialize (Buffer::Iterator start) override;
     
-    NwkFrame::FrameType GetType(void) const;
+    void setType(FrameType frametype);
+    FrameType GetType(void) const;
 
 private:
-    WsnNwkPayload wsnNwkPayload;
-    NwkFrame nwkframe;
-    NwkShortAddress destAddr;
-    NwkShortAddress sourceAddr;
-    uint8_t radius;
-    uint8_t seqNum;
-    uint64_t destAddrIEEE;
-    uint64_t sourceAddrIEEE;
-    uint8_t multicastContral;
-    uint8_t relayCount;
-    uint8_t relayIndex;
-    std::vector<NwkShortAddress> sourceList;
+    WsnNwkPayload m_wsnNwkPayload;
+    uint16_t m_frameControl;
+    NwkShortAddress m_destAddr;
+    NwkShortAddress m_sourceAddr;
+    uint8_t m_radius;
+    uint8_t m_seqNum;
+    uint64_t m_destAddrIEEE;
+    uint64_t m_sourceAddrIEEE;
+    uint8_t m_multicastContral;
+    uint8_t m_relayCount;
+    uint8_t m_relayIndex;
+    std::vector<NwkShortAddress> m_sourceList;
 
 
 };

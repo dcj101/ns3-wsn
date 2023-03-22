@@ -70,7 +70,6 @@ public:
     virtual void Print (std::ostream &os) const;
 private:
 
-    bool isCommand;
 
     uint8_t nwkCommandIdentifier;
     uint8_t commandOption;

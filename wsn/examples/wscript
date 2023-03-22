@@ -18,3 +18,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('test-network-myself',['wsn','core'])
     obj.source = 'test-network-myself.cc'
+
+    obj = bld.create_ns3_program('test-Simulator',['wsn','core'])
+    obj.source = 'test-Simulator.cc'

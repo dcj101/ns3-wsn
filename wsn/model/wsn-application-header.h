@@ -52,20 +52,11 @@ enum Acknowledgment
 };
 
 
-class ApsFrame : public Header
+class AppHeader : public Header
 {
 public:
-
-    static TypeId GetTypeId (void);
-
-    TypeId GetInstanceTypeId (void) const override;
-    void Print (std::ostream &os) const override;
-    uint32_t GetSerializedSize (void) const override;
-    void Serialize (Buffer::Iterator start) const override;
-    uint32_t Deserialize (Buffer::Iterator start) override;
-
-    ApsFrame();
-    ~ApsFrame();
+    AppHeader();
+    ~AppHeader();
 
     void setFrameType(AFrameType frametype);
     AFrameType getFrameType() const;
@@ -82,19 +73,8 @@ public:
     void setAcknowledgment(Acknowledgment acknowledgment);
     Acknowledgment getAcknowledgment() const;
 
-private:
-    uint16_t m_frameControl;
-};
-
-
-class AppHeader : public Header
-{
-public:
-    AppHeader();
-    ~AppHeader();
-
-    ApsFrame GetFrameControl() const { return frameControl; }
-    void SetFrameControl(ApsFrame fc) { frameControl = fc; }
+    uint16_t GetFrameControl() const { return m_frameControl; }
+    void SetFrameControl(uint16_t fc) { m_frameControl = fc; }
 
     uint8_t GetDestinationEndpoint() const { return destinationEndpoint; }
     void SetDestinationEndpoint(uint8_t de) { destinationEndpoint = de; }
@@ -124,7 +104,7 @@ public:
     uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:    
-    ApsFrame frameControl;
+    uint16_t m_frameControl;
     uint8_t destinationEndpoint; //0x1
     uint16_t groupaddress; // 0xffff
     uint16_t clusterID;    // 0x0402 温度
