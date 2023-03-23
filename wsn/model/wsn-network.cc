@@ -33,7 +33,7 @@ WsnNwkProtocol::WsnNwkProtocol(NODE_TYPE type)
 void 
 WsnNwkProtocol::Send(NwkShortAddress sourceaddr, NwkShortAddress dstaddr,Ptr<Packet> packet, NwkHeader::FrameType ftype)
 {
-  NS_LOG_INFO(this << Simulator::Now ().GetSeconds () << " " << sourceaddr << " " << dstaddr);
+  NS_LOG_INFO(this << Simulator::Now ().GetSeconds () << " source " << sourceaddr << " dst " << dstaddr);
   if(m_depth == -1) 
   {
     NS_LOG_ERROR("No Join Request");
@@ -62,12 +62,9 @@ WsnNwkProtocol::Send(NwkShortAddress sourceaddr, NwkShortAddress dstaddr,Ptr<Pac
   NeighborTable::NeighborEntry nextNeight = m_ntable.GetNeighborEntry(nextHop.GetAddressU16());
 
   params.m_dstExtAddr = nextNeight.extendedAddr;
-  NS_LOG_FUNCTION(this << " Send dst extmac" << params.m_dstExtAddr );
   Simulator::Schedule(Seconds(0.0),
                       &LrWpanMac::McpsDataRequest,
                       m_netDevice->GetMac(),params,packet);
-
-  return;
 }
 
 
@@ -108,10 +105,12 @@ WsnNwkProtocol::Assign(Ptr<LrWpanNetDevice> netDevice)
 void 
 WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
 {
-  NS_LOG_FUNCTION(this << " " << wsnNwkProtocol);
+  NS_LOG_FUNCTION(this << " " << wsnNwkProtocol << m_nodeType);
   uint8_t depth;
   uint8_t panid;
-  
+  uint16_t addr;
+
+
   MlmeStartRequestParams params;
   NeighborTable* ntable;
   NwkShortAddress parents;
@@ -122,7 +121,13 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
 
   if(m_nodeType != NODE_TYPE::COOR)
   {
-    NS_LOG_FUNCTION(this << "is not COOR");
+    depth = wsnNwkProtocol->GetDepth();
+    panid = wsnNwkProtocol->GetPanID();
+    
+    addr = WsnAddressAllocator::Get()->AllocateNwkAddress(depth,IsRoute(),
+                                                            parents.GetAddressU16());
+    m_addr = std::move(NwkShortAddress(addr));
+
     ntable = wsnNwkProtocol->GetNeighborTable();
     parents = wsnNwkProtocol->GetNwkShortAddress();
     netDevice = wsnNwkProtocol->GetLrWpanNetDevice();
@@ -134,14 +139,14 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
     This.extendedAddr = m_netDevice->GetMac()->GetExtendedAddress();
     This.networkAddr = GetNwkShortAddress();
 
+
     m_ntable.AddNeighborEntry(That);
     ntable->AddNeighborEntry(This);
 
-    depth = wsnNwkProtocol->GetDepth();
-    panid = wsnNwkProtocol->GetPanID();
+
   }
-  NS_LOG_FUNCTION(this << panid << " mypanid" );
-  uint16_t addr;
+
+  
 
   switch(m_nodeType)
   {
@@ -151,10 +156,6 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
       m_netDevice->GetMac ()->SetPanId (panid);
       m_netDevice->GetMac ()->SetAssociatedCoor(netDevice->GetMac()
                                                           ->GetAssociatedMac64AddressCoor());
-      addr = WsnAddressAllocator::Get()->AllocateNwkAddress(depth,0,
-                                                            parents.GetAddressU16());
-      NS_LOG_FUNCTION(this << " EDGE " << addr);
-      m_addr = std::move(NwkShortAddress(addr));
       m_route = parents;
       m_depth = depth + 1;
     break;
@@ -171,9 +172,6 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
       m_netDevice->GetMac ()->SetPanId (panid);
       m_netDevice->GetMac ()->SetAssociatedCoor(netDevice->GetMac()
                                                           ->GetAssociatedMac64AddressCoor());
-      addr = WsnAddressAllocator::Get()->AllocateNwkAddress(depth,1,
-                                                                  parents.GetAddressU16());
-      m_addr = std::move(NwkShortAddress(addr));
       m_route = parents;
       m_depth = depth + 1;
     break;
@@ -181,10 +179,14 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
       break;
   }
   params.m_bcnOrd = 15; // 非时隙
+  
   m_panId = panid;
+  
+  SetCallbackSet();
+  
   Simulator::Schedule(Seconds(0.0),&LrWpanMac::MlmeStartRequest,
                         this->m_netDevice->GetMac(),params);
-  SetCallbackSet();
+  
   if(m_nodeType != NODE_TYPE::COOR)
     Simulator::Schedule(Seconds(5),&WsnNwkProtocol::Send,
                         this,m_addr,parents,Create<Packet>(1),
@@ -266,14 +268,17 @@ void
 WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
 {
     NS_LOG_FUNCTION(this);
-    if(m_depth > 0)
-      NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " secs | Received packet of size " << p->GetSize ());
-    else 
+    
+    if(m_nodeType == NODE_TYPE::EDGE)
+      NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s EDGE Received packet of size " << p->GetSize ());
+    else if(m_nodeType == NODE_TYPE::COOR)
       NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s Coordinator Received DATA packet (size " << p->GetSize () << " bytes)");
-
+    else 
+      NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s Route Received DATA packet (size " << p->GetSize () << " bytes)");
+    
     NwkHeader receiverNwkHeader;
     p->RemoveHeader(receiverNwkHeader);
-
+    
     if(m_nodeType != NODE_TYPE::EDGE)
     {
       if(receiverNwkHeader.GetType() == NwkHeader::NWK_FRAME_COMMAND)
@@ -286,6 +291,7 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
             // 更新路由表
             StaticRoute newRoute(receiverNwkHeader.GetSourceAddr(),it.networkAddr);
             m_rtable.AddRoute(newRoute);
+            m_rtable.Print();
             continue;
           }
           Send(receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),p,NwkHeader::NWK_FRAME_COMMAND);
@@ -341,13 +347,11 @@ WsnNwkProtocol::SetCallbackSet()
     NS_LOG_FUNCTION(this);
     if(m_nodeType == NODE_TYPE::COOR)
     { 
-      NS_LOG_FUNCTION(this << "m_netDevice is --- " << m_netDevice->GetMac());
       m_MlmeStartConfirmCallback = MakeCallback (&WsnNwkProtocol::StartConfirm,this);
       m_netDevice->GetMac ()->SetMlmeStartConfirmCallback (m_MlmeStartConfirmCallback);
     } 
-    else if(m_nodeType == NODE_TYPE::EDGE)
+    else
     {
-      NS_LOG_FUNCTION(this << "m_netDevice is " << &m_netDevice);
       m_McpsDataConfirmCallback = MakeCallback (&WsnNwkProtocol::TransEndIndication,this);
       m_netDevice->GetMac ()->SetMcpsDataConfirmCallback (m_McpsDataConfirmCallback);
 
@@ -361,7 +365,6 @@ WsnNwkProtocol::SetCallbackSet()
 void 
 WsnNwkProtocol::DoInitialize (void)
 {
-
 }
 
 void 

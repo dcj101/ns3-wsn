@@ -27,7 +27,7 @@ public:
     enum FrameType
     {
         NWK_FRAME_DATA = 0x00,
-        NWK_FRAME_COMMAND = 0x11,
+        NWK_FRAME_COMMAND = 0x3,
     };
     enum ProtocolVersion
     {

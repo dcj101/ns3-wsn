@@ -52,9 +52,6 @@ NwkHeader::GetType(void) const
   return static_cast<NwkHeader::FrameType>(m_frameControl & 0x3);
 }
 
-
-
-
 void
 NwkHeader::Print(std::ostream &os) const {
   os << "framecContral is" << m_frameControl << std::endl;
@@ -83,14 +80,15 @@ NwkHeader::GetSerializedSize() const
 void
 NwkHeader::Serialize(Buffer::Iterator start) const
 {
-  if(GetType() == FrameType::NWK_FRAME_DATA)
+  if(GetType() == FrameType::NWK_FRAME_DATA || GetType() == FrameType::NWK_FRAME_COMMAND)
   {
     start.WriteU16(m_frameControl);
     start.WriteU16(m_destAddr.GetAddressU16());
     start.WriteU16(m_sourceAddr.GetAddressU16());
     start.WriteU8(m_seqNum);
   }
-  
+  // NS_LOG_FUNCTION(this << m_frameControl << " " << m_destAddr << " " << m_sourceAddr << " " << m_seqNum);
+  NS_LOG_FUNCTION(this << m_frameControl << " " << m_destAddr.GetAddressU16() << " " << m_sourceAddr.GetAddressU16() << " " << m_seqNum);
 
   // start.WriteU8(radius); 
   // start.WriteU64(destAddrIEEE);
@@ -107,13 +105,14 @@ NwkHeader::Serialize(Buffer::Iterator start) const
 uint32_t 
 NwkHeader::Deserialize (Buffer::Iterator start)
 {
-  if(GetType() == FrameType::NWK_FRAME_DATA)
+  if(GetType() == FrameType::NWK_FRAME_DATA || GetType() == FrameType::NWK_FRAME_COMMAND)
   {
     m_frameControl = start.ReadU16();  
     m_destAddr = static_cast<NwkShortAddress>(start.ReadU16());
     m_sourceAddr = static_cast<NwkShortAddress>(start.ReadU16());
     m_seqNum = start.ReadU8();
   }
+  NS_LOG_FUNCTION(this << m_frameControl << " " << m_destAddr << " " << m_sourceAddr << " " << m_seqNum);
 
   // radius = start.ReadU8();
   // destAddrIEEE = start.ReadU64();

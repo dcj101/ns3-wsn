@@ -17,11 +17,12 @@ int main()
 {
   LogComponentEnableAll (LOG_PREFIX_TIME);
   LogComponentEnableAll (LOG_PREFIX_FUNC);
-  LogComponentEnable ("LrWpanMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("LrWpanCsmaCa", LOG_LEVEL_ALL);
-  LogComponentEnable ("LrWpanNetDevice", LOG_LEVEL_ALL);
+  // LogComponentEnable ("LrWpanMac", LOG_LEVEL_ALL);
+  // LogComponentEnable ("LrWpanCsmaCa", LOG_LEVEL_ALL);
+  // LogComponentEnable ("LrWpanNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("WsnNwkProtocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Node", LOG_LEVEL_ALL);
+  LogComponentEnable ("NwkHeader", LOG_LEVEL_ALL);
+  // LogComponentEnable ("Node", LOG_LEVEL_ALL);
 
   // 设置入网分配器的分配规则
   WsnAddressAllocator::Get ()->SetWsnAddressAllocator(5,3,3);

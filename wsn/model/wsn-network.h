@@ -64,6 +64,8 @@ class WsnNwkProtocol : public Object
 
     NeighborTable* GetNeighborTable();
 
+    bool IsRoute(){return m_nodeType == NODE_TYPE::ROUTE;}
+
     void SetCallbackSet();
 
     void JoinRequest(Ptr<WsnNwkProtocol> parents);

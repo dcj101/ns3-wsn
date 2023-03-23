@@ -178,7 +178,7 @@ NwkShortAddress::GetAddressU16(void) const
 {
   uint16_t address = 0;
   address  = (m_address[0] << 8);
-  address |= (m_address[1] << 8);
+  address |= (m_address[1] << 0);
   return address;
 }
 
