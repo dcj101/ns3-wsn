@@ -58,7 +58,7 @@ WsnNwkProtocol::Send(NwkShortAddress sourceaddr, NwkShortAddress dstaddr,Ptr<Pac
   
   if(nextHop.GetAddressU16() == 0x0000)
       nextHop = m_route;
-  
+  NS_LOG_FUNCTION(this << " ntable is " << nextHop.GetAddressU16());
   NeighborTable::NeighborEntry nextNeight = m_ntable.GetNeighborEntry(nextHop.GetAddressU16());
 
   params.m_dstExtAddr = nextNeight.extendedAddr;
@@ -106,10 +106,7 @@ void
 WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
 {
   NS_LOG_FUNCTION(this << " " << wsnNwkProtocol << m_nodeType);
-  uint8_t depth;
-  uint8_t panid;
   uint16_t addr;
-
 
   MlmeStartRequestParams params;
   NeighborTable* ntable;
@@ -121,17 +118,18 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
 
   if(m_nodeType != NODE_TYPE::COOR)
   {
-    depth = wsnNwkProtocol->GetDepth();
-    panid = wsnNwkProtocol->GetPanID();
-    
-    addr = WsnAddressAllocator::Get()->AllocateNwkAddress(depth,IsRoute(),
-                                                            parents.GetAddressU16());
-    m_addr = std::move(NwkShortAddress(addr));
+    m_depth = wsnNwkProtocol->GetDepth() + 1;
+    m_panId = wsnNwkProtocol->GetPanID();
 
     ntable = wsnNwkProtocol->GetNeighborTable();
     parents = wsnNwkProtocol->GetNwkShortAddress();
     netDevice = wsnNwkProtocol->GetLrWpanNetDevice();
+    
+    addr = WsnAddressAllocator::Get()->AllocateNwkAddress(m_depth-1,IsRoute(),
+                                                            parents.GetAddressU16());
+    m_addr = std::move(NwkShortAddress(addr));
 
+    m_route = parents;
 
     That.extendedAddr = netDevice->GetMac()->GetExtendedAddress();
     That.networkAddr = wsnNwkProtocol->GetNwkShortAddress();
@@ -152,43 +150,37 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
   {
     case NODE_TYPE::EDGE :
       params.m_panCoor = false;
-      params.m_PanId = panid;
-      m_netDevice->GetMac ()->SetPanId (panid);
+      params.m_PanId = m_panId;
+      m_netDevice->GetMac ()->SetPanId (m_panId);
       m_netDevice->GetMac ()->SetAssociatedCoor(netDevice->GetMac()
                                                           ->GetAssociatedMac64AddressCoor());
-      m_route = parents;
-      m_depth = depth + 1;
     break;
     case NODE_TYPE::COOR :
       params.m_panCoor = true;
       params.m_PanId = 1;
-      panid = params.m_PanId;
+      m_panId = 1;
       m_addr = std::move(NwkShortAddress("00:00"));
       m_depth = 0;
     break;
     case NODE_TYPE::ROUTE :
       params.m_panCoor = false;
-      params.m_PanId = panid;
-      m_netDevice->GetMac ()->SetPanId (panid);
+      params.m_PanId = m_panId;
+      m_netDevice->GetMac ()->SetPanId (m_panId);
       m_netDevice->GetMac ()->SetAssociatedCoor(netDevice->GetMac()
                                                           ->GetAssociatedMac64AddressCoor());
-      m_route = parents;
-      m_depth = depth + 1;
     break;
     default:
       break;
   }
   params.m_bcnOrd = 15; // 非时隙
-  
-  m_panId = panid;
-  
+    
   SetCallbackSet();
   
   Simulator::Schedule(Seconds(0.0),&LrWpanMac::MlmeStartRequest,
                         this->m_netDevice->GetMac(),params);
   
   if(m_nodeType != NODE_TYPE::COOR)
-    Simulator::Schedule(Seconds(5),&WsnNwkProtocol::Send,
+    Simulator::Schedule(Seconds(1.0),&WsnNwkProtocol::Send,
                         this,m_addr,parents,Create<Packet>(1),
                         NwkHeader::NWK_FRAME_COMMAND);
 }
@@ -222,7 +214,8 @@ WsnNwkProtocol::GetDepth()
 NwkShortAddress 
 WsnNwkProtocol::GetNwkShortAddress()
 {
-  return m_addr;
+  NS_LOG_FUNCTION(this << m_addr << " Get Addr");
+  return m_addr.GetAddressU16();
 }
 
 Ptr<LrWpanNetDevice> 
@@ -261,7 +254,7 @@ WsnNwkProtocol::NotifyNewAggregate (void)
 void 
 WsnNwkProtocol::BeaconIndication (MlmeBeaconNotifyIndicationParams params, Ptr<Packet> p)
 {
-    NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " secs | Received BEACON packet of size " << p->GetSize ());
+    NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received BEACON packet of size " << p->GetSize ());
 }
 
 void
@@ -270,11 +263,11 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
     NS_LOG_FUNCTION(this);
     
     if(m_nodeType == NODE_TYPE::EDGE)
-      NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s EDGE Received packet of size " << p->GetSize ());
+      NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s EDGE Received packet of size " << p->GetSize ());
     else if(m_nodeType == NODE_TYPE::COOR)
-      NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s Coordinator Received DATA packet (size " << p->GetSize () << " bytes)");
+      NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s Coordinator Received DATA packet (size " << p->GetSize () << " bytes)");
     else 
-      NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s Route Received DATA packet (size " << p->GetSize () << " bytes)");
+      NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s Route Received DATA packet (size " << p->GetSize () << " bytes)");
     
     NwkHeader receiverNwkHeader;
     p->RemoveHeader(receiverNwkHeader);
@@ -294,11 +287,14 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
             m_rtable.Print();
             continue;
           }
-          Send(receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),p,NwkHeader::NWK_FRAME_COMMAND);
+          NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs update route ");
+          Send(receiverNwkHeader.GetSourceAddr(),it.networkAddr,p,NwkHeader::NWK_FRAME_COMMAND);
         }
       }
       else 
       {
+        NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize () << 
+        ",but i am a " << m_nodeType << " ,so i will forwarding packet");
         // 路由器转发数据包
         Send(receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),p,NwkHeader::NWK_FRAME_DATA);
       }
@@ -308,10 +304,12 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
       if(receiverNwkHeader.GetType() == NwkHeader::NWK_FRAME_COMMAND)
       {
         // 报文抛弃 end Device
+        NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received Command packet of size " << p->GetSize () << 
+        ", but i am a EDGE !");
       }
       else 
       {
-        NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize ());
+        NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize ());
         //实现应用层回调
       }
     }
@@ -322,14 +320,14 @@ WsnNwkProtocol::TransEndIndication (McpsDataConfirmParams params)
 {
     if (params.m_status == LrWpanMcpsDataConfirmStatus::IEEE_802_15_4_SUCCESS)
     {
-        NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " secs | Transmission successfully sent");
+        NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Transmission successfully sent");
     }
 }
 
 void 
 WsnNwkProtocol::DataIndicationCoordinator (McpsDataIndicationParams params, Ptr<Packet> p)
 {
-    NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s Coordinator Received DATA packet (size " << p->GetSize () << " bytes)");
+    NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s Coordinator Received DATA packet (size " << p->GetSize () << " bytes)");
 }
 
 void 
@@ -337,7 +335,7 @@ WsnNwkProtocol::StartConfirm (MlmeStartConfirmParams params)
 {
     if (params.m_status == MLMESTART_SUCCESS)
     {
-        NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "Beacon status SUCESSFUL");
+        NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "Beacon status SUCESSFUL");
     }
 }
 

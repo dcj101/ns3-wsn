@@ -43,6 +43,7 @@ WsnAddressAllocator::AllocateNwkAddress(uint8_t depth, bool node_type, uint16_t 
     if(node_type == 0)
     {
         if(!m_node.count(depth)) m_node[depth] = 0;
+        NS_LOG_FUNCTION(this << " address is " << Aparent << "+" << cSkip << "*" << m_r << "+" << (m_node[depth]+1));
         address = Aparent + cSkip * m_r + (++m_node[depth]);
     }
     else 

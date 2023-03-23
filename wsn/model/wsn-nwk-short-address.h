@@ -18,6 +18,8 @@ class NwkShortAddress
 public:
   NwkShortAddress ();
 
+  
+
   NwkShortAddress(uint16_t);
 
   NwkShortAddress (const char *str);
