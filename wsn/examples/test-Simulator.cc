@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " = nowtime");
 
     Simulator::Schedule(Seconds(11.0),&A);
-    Simulator::Schedule(Seconds(11.1),&A);
+    Simulator::Schedule(Seconds(11.0),&A);
     Simulator::Stop(Seconds(200.0));
     Simulator::Run ();
     Simulator::Destroy ();

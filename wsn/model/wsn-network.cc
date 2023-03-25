@@ -127,6 +127,7 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
     
     addr = WsnAddressAllocator::Get()->AllocateNwkAddress(m_depth-1,IsRoute(),
                                                             parents.GetAddressU16());
+    NS_LOG_FUNCTION(this << "addr is = " << addr);
     m_addr = std::move(NwkShortAddress(addr));
 
     m_route = parents;
@@ -144,7 +145,6 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
 
   }
 
-  
 
   switch(m_nodeType)
   {
