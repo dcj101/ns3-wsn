@@ -62,7 +62,9 @@ WsnNwkProtocol::Send(NwkShortAddress sourceaddr, NwkShortAddress dstaddr,Ptr<Pac
   NeighborTable::NeighborEntry nextNeight = m_ntable.GetNeighborEntry(nextHop.GetAddressU16());
 
   params.m_dstExtAddr = nextNeight.extendedAddr;
-  Simulator::Schedule(Seconds(0.0),
+  NS_LOG_FUNCTION(this << " ntable MAC addr is  " << nextNeight.extendedAddr);
+  // m_netDevice->GetMac()->McpsDataRequest(params,packet);
+  Simulator::Schedule(Seconds(0.12),
                       &LrWpanMac::McpsDataRequest,
                       m_netDevice->GetMac(),params,packet);
 }
@@ -135,9 +137,12 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
     That.extendedAddr = netDevice->GetMac()->GetExtendedAddress();
     That.networkAddr = wsnNwkProtocol->GetNwkShortAddress();
 
+    NS_LOG_FUNCTION(this << " that net addr is " << That.networkAddr << " " << That.extendedAddr);
+
     This.extendedAddr = m_netDevice->GetMac()->GetExtendedAddress();
     This.networkAddr = GetNwkShortAddress();
 
+    NS_LOG_FUNCTION(this << " This net addr is " << This.networkAddr << " " << This.extendedAddr);
 
     m_ntable.AddNeighborEntry(That);
     ntable->AddNeighborEntry(This);
@@ -265,9 +270,9 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
     if(m_nodeType == NODE_TYPE::EDGE)
       NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s EDGE Received packet of size " << p->GetSize ());
     else if(m_nodeType == NODE_TYPE::COOR)
-      NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s Coordinator Received DATA packet (size " << p->GetSize () << " bytes)");
+      NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s Coordinator Received packet (size " << p->GetSize () << " bytes)");
     else 
-      NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s Route Received DATA packet (size " << p->GetSize () << " bytes)");
+      NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s Route Received packet (size " << p->GetSize () << " bytes)");
     
     NwkHeader receiverNwkHeader;
     p->RemoveHeader(receiverNwkHeader);
@@ -276,25 +281,31 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
     {
       if(receiverNwkHeader.GetType() == NwkHeader::NWK_FRAME_COMMAND)
       {
+        NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s Received Command packet of size " << p->GetSize ());
         std::vector<NeighborTable::NeighborEntry> ntable = m_ntable.GetNeighborEntries();
+        uint8_t time = 1;
         for(auto it : ntable)
         {
           if(it.extendedAddr == params.m_srcExtAddr) 
           {
+            NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs update route ");
             // 更新路由表
             StaticRoute newRoute(receiverNwkHeader.GetSourceAddr(),it.networkAddr);
             m_rtable.AddRoute(newRoute);
             m_rtable.Print();
             continue;
           }
-          NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs update route ");
-          Send(receiverNwkHeader.GetSourceAddr(),it.networkAddr,p,NwkHeader::NWK_FRAME_COMMAND);
+          // Send(receiverNwkHeader.GetSourceAddr(),it.networkAddr,p,NwkHeader::NWK_FRAME_COMMAND);
+          Simulator::Schedule(Seconds(time++),&WsnNwkProtocol::Send,
+                        this,receiverNwkHeader.GetSourceAddr(),it.networkAddr
+                        ,p,NwkHeader::NWK_FRAME_COMMAND);
+          NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " send update route --->>>");
         }
       }
       else 
       {
         NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize () << 
-        ",but i am a " << m_nodeType << " ,so i will forwarding packet");
+        ",but i am a " << m_nodeType << " m_addr is " << m_addr << " ,so i will forwarding packet");
         // 路由器转发数据包
         Send(receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),p,NwkHeader::NWK_FRAME_DATA);
       }
@@ -305,11 +316,12 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
       {
         // 报文抛弃 end Device
         NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received Command packet of size " << p->GetSize () << 
-        ", but i am a EDGE !");
+        ", but i am a EDGE ! my addr is = " << m_addr);
       }
       else 
       {
-        NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize ());
+        NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize ()
+        << " m_addr is " << m_addr);
         //实现应用层回调
       }
     }

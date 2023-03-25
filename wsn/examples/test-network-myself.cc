@@ -66,10 +66,16 @@ int main()
 
 
   string mac640 = WsnAddressAllocator::Get ()->AnalysisMac48AddresstoEUI64(mac480);
+  std::cout << mac640 << "\n";
   string mac641 = WsnAddressAllocator::Get ()->AnalysisMac48AddresstoEUI64(mac481);
+  std::cout << mac641 << "\n";
   string mac642 = WsnAddressAllocator::Get ()->AnalysisMac48AddresstoEUI64(mac482);
+  std::cout << mac642 << "\n";
   string mac643 = WsnAddressAllocator::Get ()->AnalysisMac48AddresstoEUI64(mac483);
+  std::cout << mac643 << "\n";
   string mac644 = WsnAddressAllocator::Get ()->AnalysisMac48AddresstoEUI64(mac484);
+  std::cout << mac644 << "\n";
+
 
   dev0->GetMac()->SetExtendedAddress (Mac64Address (mac640.c_str()));
   dev1->GetMac()->SetExtendedAddress (Mac64Address (mac641.c_str()));
@@ -111,25 +117,25 @@ int main()
   n4->AddDevice (dev4);
 
 
-  Ptr<ConstantPositionMobilityModel> sender0Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  sender0Mobility->SetPosition (Vector (0,0,0));
-  dev0->GetPhy ()->SetMobility (sender0Mobility);
+  // Ptr<ConstantPositionMobilityModel> sender0Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  // sender0Mobility->SetPosition (Vector (0,0,0));
+  // dev0->GetPhy ()->SetMobility (sender0Mobility);
 
-  Ptr<ConstantPositionMobilityModel> sender1Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  sender1Mobility->SetPosition (Vector (0,10,0)); //10 m distance
-  dev1->GetPhy ()->SetMobility (sender1Mobility);
+  // Ptr<ConstantPositionMobilityModel> sender1Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  // sender1Mobility->SetPosition (Vector (0,10,0)); //10 m distance
+  // dev1->GetPhy ()->SetMobility (sender1Mobility);
 
-  Ptr<ConstantPositionMobilityModel> sender2Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  sender2Mobility->SetPosition (Vector (10,0,0));
-  dev2->GetPhy ()->SetMobility (sender2Mobility);
+  // Ptr<ConstantPositionMobilityModel> sender2Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  // sender2Mobility->SetPosition (Vector (10,0,0));
+  // dev2->GetPhy ()->SetMobility (sender2Mobility);
 
-  Ptr<ConstantPositionMobilityModel> sender3Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  sender3Mobility->SetPosition (Vector (0,0,10)); //10 m distance
-  dev3->GetPhy ()->SetMobility (sender3Mobility);
+  // Ptr<ConstantPositionMobilityModel> sender3Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  // sender3Mobility->SetPosition (Vector (0,0,10)); //10 m distance
+  // dev3->GetPhy ()->SetMobility (sender3Mobility);
 
-  Ptr<ConstantPositionMobilityModel> sender4Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  sender4Mobility->SetPosition (Vector (0,10,10)); //10 m distance
-  dev4->GetPhy ()->SetMobility (sender4Mobility);
+  // Ptr<ConstantPositionMobilityModel> sender4Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  // sender4Mobility->SetPosition (Vector (0,10,10)); //10 m distance
+  // dev4->GetPhy ()->SetMobility (sender4Mobility);
 
   nwk0->Install(n0);
   nwk1->Install(n1);
@@ -139,10 +145,10 @@ int main()
 
 
 
-  Simulator::Schedule(Seconds(0.5),&WsnNwkProtocol::JoinRequest,
+  Simulator::Schedule(Seconds(0.0),&WsnNwkProtocol::JoinRequest,
                       nwk0,nwk1);
   // nwk0->JoinRequest(NODE_TYPE::COOR,NULL);
-  Simulator::Schedule(Seconds(2.0),&WsnNwkProtocol::JoinRequest,
+  Simulator::Schedule(Seconds(5.0),&WsnNwkProtocol::JoinRequest,
                       nwk3,nwk0);
   // nwk1->JoinRequest(NODE_TYPE::EDGE,nwk1);
 
@@ -152,11 +158,11 @@ int main()
   Simulator::Schedule(Seconds(15.0),&WsnNwkProtocol::JoinRequest,
                       nwk2,nwk3);
 
-  Simulator::Schedule(Seconds(18.0),&WsnNwkProtocol::JoinRequest,
+  Simulator::Schedule(Seconds(20.0),&WsnNwkProtocol::JoinRequest,
                       nwk4,nwk3);        
 
-  Simulator::Schedule(Seconds(20.0),&Test,nwk2,nwk4);
-  // Simulator::Schedule(Seconds(45.0),&Test,nwk2,nwk4);
+  Simulator::Schedule(Seconds(25.0),&Test,nwk2,nwk1);
+  Simulator::Schedule(Seconds(30.0),&Test,nwk4,nwk1);
   Simulator::Stop(Seconds(600));
   Simulator::Run ();
   Simulator::Destroy ();

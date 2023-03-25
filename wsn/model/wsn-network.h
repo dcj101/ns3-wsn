@@ -52,9 +52,13 @@ class WsnNwkProtocol : public Object
 
     void SetAck(bool ack);
 
+    // void SetContext(uint8_t);
+
     uint8_t GetPanID();
 
     uint8_t GetDepth();
+
+
 
     NwkShortAddress GetNwkShortAddress();
 
@@ -115,6 +119,10 @@ class WsnNwkProtocol : public Object
     uint8_t m_depth;
 
     bool m_ack;
+
+    uint8_t m_recvContext;
+
+    uint8_t m_sendContext;
 
     MlmeStartConfirmCallback m_MlmeStartConfirmCallback;
 
