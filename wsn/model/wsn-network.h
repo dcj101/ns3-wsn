@@ -59,7 +59,6 @@ class WsnNwkProtocol : public Object
     uint8_t GetDepth();
 
 
-
     NwkShortAddress GetNwkShortAddress();
 
     Ptr<LrWpanNetDevice> GetLrWpanNetDevice();
@@ -131,6 +130,9 @@ class WsnNwkProtocol : public Object
     MlmeBeaconNotifyIndicationCallback m_MlmeBeaconNotifyIndicationCallback;
     
     McpsDataIndicationCallback m_McpsDataIndicationCallback;
+
+    // track
+    TracedCallback<const NwkHeader&, Ptr<const Packet>, uint32_t> m_sendTrace;
 };  
 
 }

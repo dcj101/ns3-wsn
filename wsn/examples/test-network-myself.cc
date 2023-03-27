@@ -16,19 +16,25 @@ NS_LOG_COMPONENT_DEFINE ("testexample");
 
 void Test(Ptr<WsnNwkProtocol> from, Ptr<WsnNwkProtocol> to)
 {
-    Simulator::ScheduleWithContext(1,Seconds(20.0),&WsnNwkProtocol::Send,
+  std::cout << "---------------------------------------------\n";
+  std::cout << "---------------------------------------------\n";
+  std::cout << "---------------------------------------------\n";
+  std::cout << "---------------------------------------------\n";
+  std::cout << "---------------------------------------------\n";
+  std::cout << "---------------------------------------------\n";
+    Simulator::ScheduleWithContext(1,Seconds(0.0),&WsnNwkProtocol::Send,
                       from,from->GetNwkShortAddress(),to->GetNwkShortAddress(),
-                      Create<Packet>(7),
+                      Create<Packet>(17),
                       NwkHeader::NWK_FRAME_DATA);
-    Simulator::ScheduleWithContext(2,Seconds(20.0),&WsnNwkProtocol::Send,
+    Simulator::ScheduleWithContext(2,Seconds(0.0),&WsnNwkProtocol::Send,
                       to,to->GetNwkShortAddress(),from->GetNwkShortAddress(),
-                      Create<Packet>(11),
+                      Create<Packet>(111),
                       NwkHeader::NWK_FRAME_DATA);
 }
 
 int main()
 {
-  // LogComponentEnable ("testexample", LogLevel (LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_INFO));
+  LogComponentEnable ("testexample", LogLevel (LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_INFO));
   LogComponentEnableAll (LOG_PREFIX_TIME);
   LogComponentEnableAll (LOG_PREFIX_FUNC);
   // LogComponentEnable ("LrWpanMac", LOG_LEVEL_ALL);
@@ -117,25 +123,25 @@ int main()
   n4->AddDevice (dev4);
 
 
-  // Ptr<ConstantPositionMobilityModel> sender0Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  // sender0Mobility->SetPosition (Vector (0,0,0));
-  // dev0->GetPhy ()->SetMobility (sender0Mobility);
+  Ptr<ConstantPositionMobilityModel> sender0Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  sender0Mobility->SetPosition (Vector (0,0,0));
+  dev0->GetPhy ()->SetMobility (sender0Mobility);
 
-  // Ptr<ConstantPositionMobilityModel> sender1Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  // sender1Mobility->SetPosition (Vector (0,10,0)); //10 m distance
-  // dev1->GetPhy ()->SetMobility (sender1Mobility);
+  Ptr<ConstantPositionMobilityModel> sender1Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  sender1Mobility->SetPosition (Vector (0,10,0)); //10 m distance
+  dev1->GetPhy ()->SetMobility (sender1Mobility);
 
-  // Ptr<ConstantPositionMobilityModel> sender2Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  // sender2Mobility->SetPosition (Vector (10,0,0));
-  // dev2->GetPhy ()->SetMobility (sender2Mobility);
+  Ptr<ConstantPositionMobilityModel> sender2Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  sender2Mobility->SetPosition (Vector (10,0,0));
+  dev2->GetPhy ()->SetMobility (sender2Mobility);
 
-  // Ptr<ConstantPositionMobilityModel> sender3Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  // sender3Mobility->SetPosition (Vector (0,0,10)); //10 m distance
-  // dev3->GetPhy ()->SetMobility (sender3Mobility);
+  Ptr<ConstantPositionMobilityModel> sender3Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  sender3Mobility->SetPosition (Vector (0,0,10)); //10 m distance
+  dev3->GetPhy ()->SetMobility (sender3Mobility);
 
-  // Ptr<ConstantPositionMobilityModel> sender4Mobility = CreateObject<ConstantPositionMobilityModel> ();
-  // sender4Mobility->SetPosition (Vector (0,10,10)); //10 m distance
-  // dev4->GetPhy ()->SetMobility (sender4Mobility);
+  Ptr<ConstantPositionMobilityModel> sender4Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  sender4Mobility->SetPosition (Vector (0,10,10)); //10 m distance
+  dev4->GetPhy ()->SetMobility (sender4Mobility);
 
   nwk0->Install(n0);
   nwk1->Install(n1);
@@ -161,8 +167,11 @@ int main()
   Simulator::Schedule(Seconds(20.0),&WsnNwkProtocol::JoinRequest,
                       nwk4,nwk3);        
 
-  Simulator::Schedule(Seconds(25.0),&Test,nwk2,nwk1);
-  Simulator::Schedule(Seconds(30.0),&Test,nwk4,nwk1);
+
+
+  Simulator::Schedule(Seconds(35.0),&Test,nwk2,nwk1);
+  Simulator::Schedule(Seconds(35.0),&Test,nwk4,nwk1);
+  Simulator::Schedule(Seconds(35.0),&Test,nwk2,nwk4);
   Simulator::Stop(Seconds(600));
   Simulator::Run ();
   Simulator::Destroy ();

@@ -19,7 +19,7 @@ WsnApplication::GetTypeId (void)
 
 WsnApplication::WsnApplication()
 {
-  m_point = 1;
+  m_point = 31;
 }
 
 WsnApplication::~WsnApplication()

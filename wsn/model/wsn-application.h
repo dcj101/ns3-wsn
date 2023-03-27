@@ -61,12 +61,11 @@ private:
 
     void SendSensorNodeInfo();
 
+    uint8_t m_point;
+
     Ptr<Node> m_node;
 
     NwkShortAddress m_peerAddr;
-
-    uint8_t m_point;
-
 
 protected:
 

@@ -12,6 +12,11 @@ WsnNwkProtocol::GetTypeId (void)
     static TypeId tid = TypeId ("ns3::WsnNwkProtocol")
                     .SetParent<Object> ()
                     .AddConstructor<WsnNwkProtocol>()
+                    .AddTraceSource ("SendTrace",
+                     "A newly-generated packet by this node is "
+                     "about to be queued for transmission",
+                     MakeTraceSourceAccessor (&WsnNwkProtocol::m_sendTrace),
+                     "ns3::WsnNwkProtocol::SentTracedCallback")
                     ;
     return tid;
 }
@@ -34,6 +39,7 @@ void
 WsnNwkProtocol::Send(NwkShortAddress sourceaddr, NwkShortAddress dstaddr,Ptr<Packet> packet, NwkHeader::FrameType ftype)
 {
   NS_LOG_INFO(this << Simulator::Now ().GetSeconds () << " source " << sourceaddr << " dst " << dstaddr);
+
   if(m_depth == -1) 
   {
     NS_LOG_ERROR("No Join Request");
@@ -64,7 +70,7 @@ WsnNwkProtocol::Send(NwkShortAddress sourceaddr, NwkShortAddress dstaddr,Ptr<Pac
   params.m_dstExtAddr = nextNeight.extendedAddr;
   NS_LOG_FUNCTION(this << " ntable MAC addr is  " << nextNeight.extendedAddr);
   // m_netDevice->GetMac()->McpsDataRequest(params,packet);
-  Simulator::Schedule(Seconds(0.12),
+  Simulator::Schedule(Seconds(0.0),
                       &LrWpanMac::McpsDataRequest,
                       m_netDevice->GetMac(),params,packet);
 }
@@ -147,7 +153,6 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
     m_ntable.AddNeighborEntry(That);
     ntable->AddNeighborEntry(This);
 
-
   }
 
 
@@ -185,7 +190,7 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
                         this->m_netDevice->GetMac(),params);
   
   if(m_nodeType != NODE_TYPE::COOR)
-    Simulator::Schedule(Seconds(1.0),&WsnNwkProtocol::Send,
+    Simulator::Schedule(Seconds(0.01),&WsnNwkProtocol::Send,
                         this,m_addr,parents,Create<Packet>(1),
                         NwkHeader::NWK_FRAME_COMMAND);
 }
@@ -214,7 +219,7 @@ uint8_t
 WsnNwkProtocol::GetDepth()
 {
   return m_depth;
-}
+}   
 
 NwkShortAddress 
 WsnNwkProtocol::GetNwkShortAddress()
@@ -266,7 +271,6 @@ void
 WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
 {
     NS_LOG_FUNCTION(this);
-    
     if(m_nodeType == NODE_TYPE::EDGE)
       NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s EDGE Received packet of size " << p->GetSize ());
     else if(m_nodeType == NODE_TYPE::COOR)
@@ -276,14 +280,14 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
     
     NwkHeader receiverNwkHeader;
     p->RemoveHeader(receiverNwkHeader);
-    
+    double Delay = 0.0;
+    double gap = 0.01;
     if(m_nodeType != NODE_TYPE::EDGE)
     {
       if(receiverNwkHeader.GetType() == NwkHeader::NWK_FRAME_COMMAND)
       {
         NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s Received Command packet of size " << p->GetSize ());
         std::vector<NeighborTable::NeighborEntry> ntable = m_ntable.GetNeighborEntries();
-        uint8_t time = 1;
         for(auto it : ntable)
         {
           if(it.extendedAddr == params.m_srcExtAddr) 
@@ -296,9 +300,10 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
             continue;
           }
           // Send(receiverNwkHeader.GetSourceAddr(),it.networkAddr,p,NwkHeader::NWK_FRAME_COMMAND);
-          Simulator::Schedule(Seconds(time++),&WsnNwkProtocol::Send,
+          Simulator::Schedule(Seconds(Delay),&WsnNwkProtocol::Send,
                         this,receiverNwkHeader.GetSourceAddr(),it.networkAddr
                         ,p,NwkHeader::NWK_FRAME_COMMAND);
+          Delay += gap;
           NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " send update route --->>>");
         }
       }
@@ -307,7 +312,10 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
         NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize () << 
         ",but i am a " << m_nodeType << " m_addr is " << m_addr << " ,so i will forwarding packet");
         // 路由器转发数据包
-        Send(receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),p,NwkHeader::NWK_FRAME_DATA);
+        // Send(receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),p,NwkHeader::NWK_FRAME_DATA);
+          Simulator::Schedule(Seconds(0.0),&WsnNwkProtocol::Send,
+                this,receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),
+                p,NwkHeader::NWK_FRAME_DATA);
       }
     }
     else 
@@ -384,6 +392,4 @@ WsnNwkProtocol::DoDispose (void)
     m_node = 0;
     Object::DoDispose ();
 }
-
-
 }

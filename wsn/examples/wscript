@@ -10,8 +10,8 @@ def build(bld):
     obj = bld.create_ns3_program('test-network',['wsn','core'])
     obj.source = 'test-network.cc'
 
-    obj = bld.create_ns3_program('test-address48',['wsn','core'])
-    obj.source = 'test-address48.cc'
+    obj = bld.create_ns3_program('test-application-copy',['wsn','core'])
+    obj.source = 'test-application-copy.cc'
 
     obj = bld.create_ns3_program('test-addressEUI64',['wsn','core'])
     obj.source = 'test-addressEUI64.cc'

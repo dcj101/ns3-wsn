@@ -72,12 +72,12 @@ AppHeader::getAcknowledgment() const
 
 
 AppHeader::AppHeader():
-        m_frameControl(0),
+        sourceEndpoint(0x1),
         destinationEndpoint(0x1),
+        m_frameControl(0),
         groupaddress(0xffff),
         clusterID(0x0402),
-        profileID(0x000),
-        sourceEndpoint(0x1)
+        profileID(0x000)
 { 
     Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
     x->SetAttribute ("Min", DoubleValue (0.0));
@@ -128,24 +128,24 @@ AppHeader::GetSerializedSize (void) const
 void 
 AppHeader::Serialize (Buffer::Iterator start) const
 {
-    start.WriteU16(m_frameControl);
+    start.WriteU8(sourceEndpoint);
     start.WriteU8(destinationEndpoint);
+    start.WriteU16(m_frameControl);
     start.WriteU16(groupaddress);
     start.WriteU16(clusterID);
     start.WriteU16(profileID);
-    start.WriteU8(sourceEndpoint);
     start.WriteU8(apsCount);
 }
 
 uint32_t 
 AppHeader::Deserialize (Buffer::Iterator start)
 {
-    m_frameControl = start.ReadU16();
+    sourceEndpoint = start.ReadU8();
     destinationEndpoint = start.ReadU8();
+    m_frameControl = start.ReadU16();
     groupaddress = start.ReadU16();
     clusterID = start.ReadU16();
     profileID = start.ReadU16();
-    sourceEndpoint = start.ReadU8();
     apsCount = start.ReadU8();
     return GetSerializedSize();
 }

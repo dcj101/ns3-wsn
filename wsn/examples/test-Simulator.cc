@@ -10,6 +10,16 @@
 #include <iostream>
 using namespace ns3;
 
+class D
+{
+    public:
+    void A()
+    {
+        NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " = nowtime is in A");
+    }
+
+};
+
 void C()
 {
     NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " = nowtime is in C");
@@ -34,9 +44,10 @@ int main(int argc, char *argv[])
     LogComponentEnableAll (LOG_PREFIX_TIME);
     LogComponentEnableAll (LOG_PREFIX_FUNC);
     NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " = nowtime");
-
-    Simulator::Schedule(Seconds(11.0),&A);
-    Simulator::Schedule(Seconds(11.0),&A);
+    D d;
+    // Simulator::Schedule(Seconds(11.0),&A);
+    Simulator::Schedule(Seconds(11.0),&D::A,&d);
+    Simulator::Schedule(Seconds(11.0),&D::A,&d);
     Simulator::Stop(Seconds(200.0));
     Simulator::Run ();
     Simulator::Destroy ();

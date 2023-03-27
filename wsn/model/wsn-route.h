@@ -37,6 +37,8 @@ public:
 private:
     NwkShortAddress m_dest;      // 目的地址
     NwkShortAddress m_nextHop;   // 下一跳地址
+    bool isValue;               // 路由是否有效
+
 };
 
 

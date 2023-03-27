@@ -104,12 +104,12 @@ public:
     uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:    
-    uint16_t m_frameControl;
+    uint8_t sourceEndpoint; // 0x1
     uint8_t destinationEndpoint; //0x1
+    uint16_t m_frameControl;
     uint16_t groupaddress; // 0xffff
     uint16_t clusterID;    // 0x0402 温度
     uint16_t profileID;    // 0x0000
-    uint8_t sourceEndpoint; // 0x1
     uint8_t apsCount;     // rand
 };
 
