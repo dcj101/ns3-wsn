@@ -1,7 +1,9 @@
-#include "wsn-float-classifier.h"
+#include "wsn-flow-classifier.h"
+#include "ns3/log.h"
 
 namespace ns3
 {
+NS_LOG_COMPONENT_DEFINE ("WsnFlowClassifier");
 
 
 bool operator < (const WsnFlowClassifier::FourTuple &t1,
@@ -64,8 +66,8 @@ WsnFlowClassifier::Classify (const NwkHeader &ipHeader, Ptr<const Packet> ipPayl
                               uint32_t *out_flowId, uint32_t *out_packetId)
 {
   FourTuple tuple;
-  tuple.sourceAddress = ipHeader.GetSource ();
-  tuple.destinationAddress = ipHeader.GetDestination ();
+  tuple.sourceAddress = ipHeader.GetSourceAddr ();
+  tuple.destinationAddress = ipHeader.GetDestAddr ();
 
   uint8_t data[2];
   ipPayload->CopyData (data, 2);
@@ -81,7 +83,6 @@ WsnFlowClassifier::Classify (const NwkHeader &ipHeader, Ptr<const Packet> ipPayl
       FlowId newFlowId = GetNewFlowId ();
       insert.first->second = newFlowId;
       m_flowPktIdMap[newFlowId] = 0;
-      m_flowDscpMap[newFlowId];
     }
   else
     {
@@ -94,10 +95,10 @@ WsnFlowClassifier::Classify (const NwkHeader &ipHeader, Ptr<const Packet> ipPayl
 }
 
 
-WsnFlowClassifier::FiveTuple
+WsnFlowClassifier::FourTuple
 WsnFlowClassifier::FindFlow (FlowId flowId) const
 {
-  for (std::map<FiveTuple, FlowId>::const_iterator
+  for (std::map<FourTuple, FlowId>::const_iterator
        iter = m_flowMap.begin (); iter != m_flowMap.end (); iter++)
     {
       if (iter->second == flowId)
@@ -106,7 +107,7 @@ WsnFlowClassifier::FindFlow (FlowId flowId) const
         }
     }
   NS_FATAL_ERROR ("Could not find the flow with ID " << flowId);
-  FourTuple retval = { NwkShortAddress(0), NwkShortAddress(0), 0, 0 };
+  FourTuple retval = { NwkShortAddress((uint16_t)0), NwkShortAddress((uint16_t)0), 0, 0 };
   return retval;
 }
 
@@ -116,7 +117,7 @@ WsnFlowClassifier::SerializeToXmlStream (std::ostream &os, uint16_t indent) cons
   Indent (os, indent); os << "<WsnFlowClassifier>\n";
 
   indent += 2;
-  for (std::map<FiveTuple, FlowId>::const_iterator
+  for (std::map<FourTuple, FlowId>::const_iterator
        iter = m_flowMap.begin (); iter != m_flowMap.end (); iter++)
     {
       Indent (os, indent);
@@ -126,11 +127,6 @@ WsnFlowClassifier::SerializeToXmlStream (std::ostream &os, uint16_t indent) cons
          << " sourcePoint=\"" << iter->first.sourcePoint << "\""
          << " destinationPoint=\"" << iter->first.destinationPoint << "\">\n";
 
-      indent += 2;
-      std::map<FlowId, std::map<Ipv4Header::DscpType, uint32_t> >::const_iterator flow
-        = m_flowDscpMap.find (iter->second);
-
-      indent -= 2;
       Indent (os, indent); os << "</Flow>\n";
     }
   indent -= 2;

@@ -1,8 +1,10 @@
 
 #include "wsn-flow-probe.h"
+#include "ns3/log.h"
 
 namespace ns3
 {
+NS_LOG_COMPONENT_DEFINE ("WsnFlowProbe");
 
 
 class WsnFlowProbeTag : public Tag
@@ -67,12 +69,8 @@ WsnFlowProbeTag::Serialize (TagBuffer buf) const
   buf.WriteU32 (m_flowId);
   buf.WriteU32 (m_packetId);
   buf.WriteU32 (m_packetSize);
-
-  uint8_t tBuf[4];
-  m_src.Serialize (tBuf);
-  buf.Write (tBuf, 4);
-  m_dst.Serialize (tBuf);
-  buf.Write (tBuf, 4);
+  buf.WriteU16(m_src.GetAddressU16());
+  buf.WriteU16(m_dst.GetAddressU16());
 }
 void 
 WsnFlowProbeTag::Deserialize (TagBuffer buf)
@@ -80,12 +78,8 @@ WsnFlowProbeTag::Deserialize (TagBuffer buf)
   m_flowId = buf.ReadU32 ();
   m_packetId = buf.ReadU32 ();
   m_packetSize = buf.ReadU32 ();
-
-  uint8_t tBuf[4];
-  buf.Read (tBuf, 4);
-  m_src = NwkShortAddress::Deserialize (tBuf);
-  buf.Read (tBuf, 4);
-  m_dst = NwkShortAddress::Deserialize (tBuf);
+  m_src = NwkShortAddress(buf.ReadU16());
+  m_dst = NwkShortAddress(buf.ReadU16());
 }
 void 
 WsnFlowProbeTag::Print (std::ostream &os) const
@@ -148,6 +142,10 @@ WsnFlowProbeTag::IsSrcDstValid (NwkShortAddress src, NwkShortAddress dst) const
 // ------------------------------------
 // ------------------------------------
 
+WsnFlowProbe::~WsnFlowProbe ()
+{
+
+}
 
 WsnFlowProbe::WsnFlowProbe (Ptr<FlowMonitor> monitor,
                               Ptr<WsnFlowClassifier> classifier,
@@ -159,7 +157,7 @@ WsnFlowProbe::WsnFlowProbe (Ptr<FlowMonitor> monitor,
 
   m_wsnNwkProtocol = node->GetObject<WsnNwkProtocol> ();
 
-  if (!m_wsnNwkProtocol->TraceConnectWithoutContext ("SendOutgoing",
+  if (!m_wsnNwkProtocol->TraceConnectWithoutContext ("SendTrace",
                                            MakeCallback (&WsnFlowProbe::SendOutgoingLogger, Ptr<WsnFlowProbe> (this))))
     {
       NS_FATAL_ERROR ("trace fail");
@@ -181,12 +179,6 @@ WsnFlowProbe::SendOutgoingLogger (const NwkHeader &ipHeader, Ptr<const Packet> i
 {
   FlowId flowId;
   FlowPacketId packetId;
-
-  if (!m_Wsn->IsUnicast(ipHeader.GetDestination ()))
-    {
-      return;
-    }
-
   WsnFlowProbeTag fTag;
   bool found = ipPayload->FindFirstMatchingByteTag (fTag);
   if (found)

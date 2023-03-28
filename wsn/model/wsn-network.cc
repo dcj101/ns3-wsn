@@ -13,11 +13,11 @@ WsnNwkProtocol::GetTypeId (void)
                     .SetParent<Object> ()
                     .AddConstructor<WsnNwkProtocol>()
                     .AddTraceSource ("SendTrace",
-                     "A newly-generated packet by this node is "
-                     "about to be queued for transmission",
-                     MakeTraceSourceAccessor (&WsnNwkProtocol::m_sendTrace),
-                     "ns3::WsnNwkProtocol::SentTracedCallback")
-                    ;
+                                    "A newly-generated packet by this node is "
+                                    "about to be queued for transmission",
+                                    MakeTraceSourceAccessor (&WsnNwkProtocol::m_sendTrace),
+                                    "ns3::WsnNwkProtocol::SentTracedCallback")
+                                    ;
     return tid;
 }
 

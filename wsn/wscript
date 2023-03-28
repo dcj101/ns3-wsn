@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('wsn', ['internet', 'core', 'lr-wpan', 'mobility', 'spectrum', 'propagation'])
+    module = bld.create_ns3_module('wsn', ['internet', 'core', 'lr-wpan', 'mobility', 'spectrum', 'propagation','flow-monitor'])
     module.source = [
         'model/wsn-application-header.cc',
         'model/wsn-application.cc',
@@ -13,7 +13,10 @@ def build(bld):
         'model/wsn-address-allocator.cc',
         'model/wsn-network.cc',
         'model/wsn-neighbor-table.cc',
+        'model/wsn-flow-probe.cc',
+        'model/wsn-flow-classifier.cc',
         'helper/wsn-helper.cc',
+        'helper/wsn-flow-monitor-helper.cc',
         ]
     
     headers = bld(features='ns3header')
@@ -29,7 +32,10 @@ def build(bld):
         'model/wsn-address-allocator.h',
         'model/wsn-network.h',
         'model/wsn-neighbor-table.h',
+        'model/wsn-flow-probe.h',
+        'model/wsn-flow-classifier.h',
         'helper/wsn-helper.h',
+        'helper/wsn-flow-monitor-helper.h',
         ]
 
     if bld.env['ENABLE_EXAMPLES']:

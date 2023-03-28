@@ -58,7 +58,6 @@ class WsnNwkProtocol : public Object
 
     uint8_t GetDepth();
 
-
     NwkShortAddress GetNwkShortAddress();
 
     Ptr<LrWpanNetDevice> GetLrWpanNetDevice();
