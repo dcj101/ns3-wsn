@@ -13,9 +13,9 @@ using namespace ns3;
 class D
 {
     public:
-    void A()
+    void A(int x)
     {
-        NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " = nowtime is in A");
+        NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " = nowtime is in A " << x);
     }
 
 };
@@ -33,8 +33,12 @@ void B()
 void A()
 {
     NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " = nowtime is in A");
+    
     // while(1);
-    Simulator::Schedule(Seconds(2.0),&B);
+
+
+    Simulator::Schedule(Seconds(0.0),&B);
+    std::cout << "asdsdasdsadasdasdasdsa@@@\n";
     // Simulator::Stop(Seconds(3.1));
     Simulator::Schedule(Seconds(3.0),&C);
 }
@@ -46,8 +50,8 @@ int main(int argc, char *argv[])
     NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " = nowtime");
     D d;
     // Simulator::Schedule(Seconds(11.0),&A);
-    Simulator::Schedule(Seconds(11.0),&D::A,&d);
-    Simulator::Schedule(Seconds(11.0),&D::A,&d);
+    Simulator::Schedule(Seconds(11.0),&D::A,&d,1);
+    Simulator::Schedule(Seconds(11.0),&D::A,&d,0);
     Simulator::Stop(Seconds(200.0));
     Simulator::Run ();
     Simulator::Destroy ();

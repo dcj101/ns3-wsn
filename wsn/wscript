@@ -15,6 +15,7 @@ def build(bld):
         'model/wsn-neighbor-table.cc',
         'model/wsn-flow-probe.cc',
         'model/wsn-flow-classifier.cc',
+        'model/wsn-flow-probe-tag.cc',
         'helper/wsn-helper.cc',
         'helper/wsn-flow-monitor-helper.cc',
         ]
@@ -34,6 +35,7 @@ def build(bld):
         'model/wsn-neighbor-table.h',
         'model/wsn-flow-probe.h',
         'model/wsn-flow-classifier.h',
+        'model/wsn-flow-probe-tag.h',
         'helper/wsn-helper.h',
         'helper/wsn-flow-monitor-helper.h',
         ]

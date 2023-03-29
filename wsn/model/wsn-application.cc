@@ -43,7 +43,7 @@ WsnApplication::SendData()
   
   Ptr<WsnNwkProtocol> wsnnwk = m_node->GetObject<WsnNwkProtocol> ();
 
-  wsnnwk->Send(wsnnwk->GetNwkShortAddress(),m_peerAddr,m_packet,NwkHeader::NWK_FRAME_DATA);
+  wsnnwk->Send(wsnnwk->GetNwkShortAddress(),m_peerAddr,m_packet,NwkHeader::NWK_FRAME_DATA,0);
 }
 
 void 

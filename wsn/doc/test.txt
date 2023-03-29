@@ -1,0 +1,384 @@
++45.020000000s WsnNwkProtocol:GetNwkShortAddress(0x64f0a0, 00:40, " Get Addr")
++45.020000000s WsnNwkProtocol:GetNwkShortAddress(0x64f190, 00:14, " Get Addr")
++45.020000000s WsnNwkProtocol:GetNwkShortAddress(0x64f190, 00:14, " Get Addr")
++45.020000000s WsnNwkProtocol:GetNwkShortAddress(0x64f0a0, 00:40, " Get Addr")
++45.020000000s WsnNwkProtocol:Send(): 0x64f19045.02 source 00:14 dst 00:40 ftype = 0 is Forward = 0
++45.020000000s WsnFlowProbe:SendOutgoingLogger(0x650bc0, " ------- >>>")
++45.020000000s WsnFlowProbe:SendOutgoingLogger(0x650bc0, " ------- >>>", 0)
++45.020000000s WsnFlowProbe:SendOutgoingLogger(): ReportFirstTx (0x650bc0, 11, 0, 31); framecContral is0
+destAddr: 00:40
+sourceAddr: 00:14
+radius: 0
+seqNum: 179
+destAddrIEEE: 0
+sourceAddrIEEE: 0
+multicastContral: 0
+relayCount: 0
+relayIndex: 0
+sourceList: [ ]
+
++45.020000000s WsnNwkProtocol:Send(0x64f190, " ntable is ", 1)
++45.020000000s WsnNwkProtocol:Send(0x64f190, " ntable MAC addr is  ", 55:2e:cb:ff:fe:d3:71:31)
++45.020000000s WsnNwkProtocol:Send(): 0x64f0a045.02 source 00:40 dst 00:14 ftype = 0 is Forward = 0
++45.020000000s WsnFlowProbe:SendOutgoingLogger(0x650a40, " ------- >>>")
++45.020000000s WsnFlowProbe:SendOutgoingLogger(0x650a40, " ------- >>>", 0)
++45.020000000s WsnFlowProbe:SendOutgoingLogger(): ReportFirstTx (0x650a40, 12, 0, 45); framecContral is0
+destAddr: 00:14
+sourceAddr: 00:40
+radius: 0
+seqNum: 79
+destAddrIEEE: 0
+sourceAddrIEEE: 0
+multicastContral: 0
+relayCount: 0
+relayIndex: 0
+sourceList: [ ]
+
++45.020000000s WsnNwkProtocol:Send(0x64f0a0, " ntable is ", 0)
++45.020000000s WsnNwkProtocol:Send(0x64f0a0, " ntable MAC addr is  ", b1:59:0e:ff:fe:8d:47:00)
++45.020000000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:McpsDataRequest(0x64a080, 0x643010, "dcj come in ----------------------")
++45.020000000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:GetExtendedAddress(0x64a080)
++45.020000000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:CheckQueue(0x64a080)
++45.020000000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:McpsDataRequest(0x648890, 0x5d9ec0, "dcj come in ----------------------")
++45.020000000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:GetExtendedAddress(0x648890)
++45.020000000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:CheckQueue(0x648890)
++45.020000000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:SetLrWpanMacState(0x64a080, "mac state = ", 1)
++45.020000000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:ChangeMacState(): 0x64a080 change lrwpan mac state from 0 to 1
++45.020000000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PlmeSetTRXStateConfirm(0x64a080, 6)
++45.020000000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:SetLrWpanMacState(0x648890, "mac state = ", 1)
++45.020000000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:ChangeMacState(): 0x648890 change lrwpan mac state from 0 to 1
++45.020000000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PlmeSetTRXStateConfirm(0x648890, 6)
++45.021408000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:SetLrWpanMacState(0x64a080, "mac state = ", 5)
++45.021408000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:ChangeMacState(): 0x64a080 change lrwpan mac state from 1 to 2
++45.021408000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:SetLrWpanMacState(0x648890, "mac state = ", 5)
++45.021408000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:ChangeMacState(): 0x648890 change lrwpan mac state from 1 to 2
++45.021600000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PlmeSetTRXStateConfirm(0x64a080, 9)
++45.021600000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PlmeSetTRXStateConfirm(0x648890, 9)
++45.023360000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataConfirm(0x64a080, 7, 1)
++45.023360000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataConfirm(0x64a080, " ------>>>>>> i had receviced a ack packet")
+00:14 45.0234 secs | Transmission successfully sent
++45.023360000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:SetLrWpanMacState(0x64a080, "mac state = ", 0)
++45.023360000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:ChangeMacState(): 0x64a080 change lrwpan mac state from 2 to 0
++45.023360033s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(0x647150, 49, 0x6535d0, 237)
++45.023360033s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.023360033s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.023360033s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): 1184 acceptFrame0
++45.023360033s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): 1206 acceptFrame0
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(0x64b870, 49, 0x652460, 237)
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): 1184 acceptFrame1
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): 1206 acceptFrame1
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): receivedMacHdr is 1 0 0 1
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): Packet from cb:87:a7:ff:fe:dd:7f:b1
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): Packet to 55:2e:cb:ff:fe:d3:71:31
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): Data Packet is for me; forwarding up10
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): Data Packet is for me; forwarding up
++45.023360047s WsnNwkProtocol:DataIndication(0x64f280)
+00:01 45.0234s Route Received packet (size 24 bytes)
+00:01 45.0234 secs | Received DATA packet of size 17,but i am a 1 m_addr is 00:01 ,so i will forwarding packet
++45.023360047s WsnFlowProbe:ForwardLogger(0x650d50, " ------- >>>")
++45.023360047s WsnFlowProbe:ForwardLogger(0x650d50, " --------------------------------- >>>", 1)
++45.023360047s WsnFlowProbe:ForwardLogger(): ReportForwarding (0x650d50, 11, 0, 24);
++45.023360047s WsnNwkProtocol:Send(): 0x64f28045.0234 source 00:14 dst 00:40 ftype = 0 is Forward = 1
++45.023360047s WsnNwkProtocol:Send(0x64f280, " ntable is ", 0)
++45.023360047s WsnNwkProtocol:Send(0x64f280, " ntable MAC addr is  ", b1:59:0e:ff:fe:8d:47:00)
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:McpsDataRequest(0x64b870, 0x652460, "dcj come in ----------------------")
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:GetExtendedAddress(0x64b870)
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:CheckQueue(0x64b870)
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:SetLrWpanMacState(0x64b870, "mac state = ", 1)
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:ChangeMacState(): 0x64b870 change lrwpan mac state from 0 to 1
++45.023360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PlmeSetTRXStateConfirm(0x64b870, 6)
++45.023552000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PlmeSetTRXStateConfirm(0x64a080, 6)
++45.023552000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:CheckQueue(0x64a080)
++45.023808000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataConfirm(0x648890, 7, 1)
++45.023808000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataConfirm(0x648890, " ------>>>>>> i had receviced a ack packet")
+00:40 45.0238 secs | Transmission successfully sent
++45.023808000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:SetLrWpanMacState(0x648890, "mac state = ", 0)
++45.023808000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:ChangeMacState(): 0x648890 change lrwpan mac state from 2 to 0
++45.023808033s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(0x64d060, 63, 0x64cd00, 255)
++45.023808033s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.023808033s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.023808033s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): 1184 acceptFrame0
++45.023808033s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): 1206 acceptFrame0
++45.024000000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:IfsWaitTimeout(): LIFS of 40 symbols (+0.00064s) completed 
++45.024000000s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:CheckQueue(0x64a080)
++45.024000000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PlmeSetTRXStateConfirm(0x648890, 6)
++45.024000000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:CheckQueue(0x648890)
++45.024448000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:IfsWaitTimeout(): LIFS of 40 symbols (+0.00064s) completed 
++45.024448000s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:CheckQueue(0x648890)
++45.025408047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:SetLrWpanMacState(0x64b870, "mac state = ", 5)
++45.025408047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:ChangeMacState(): 0x64b870 change lrwpan mac state from 1 to 2
++45.025600047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PlmeSetTRXStateConfirm(0x64b870, 9)
++45.027360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataConfirm(0x64b870, 7, 1)
++45.027360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataConfirm(0x64b870, " ------>>>>>> i had receviced a ack packet")
+00:01 45.0274 secs | Transmission successfully sent
++45.027360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:SetLrWpanMacState(0x64b870, "mac state = ", 0)
++45.027360047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:ChangeMacState(): 0x64b870 change lrwpan mac state from 2 to 0
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(0x647150, 49, 0x64cd00, 255)
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): 1184 acceptFrame1
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): 1206 acceptFrame1
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): receivedMacHdr is 1 0 0 1
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): Packet from 55:2e:cb:ff:fe:d3:71:31
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): Packet to b1:59:0e:ff:fe:8d:47:00
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): Data Packet is for me; forwarding up10
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataIndication(): Data Packet is for me; forwarding up
++45.027360080s WsnNwkProtocol:DataIndication(0x64efb0)
+00:00 45.0274s Coordinator Received packet (size 24 bytes)
+00:00 45.0274 secs | Received DATA packet of size 17,but i am a 2 m_addr is 00:00 ,so i will forwarding packet
++45.027360080s WsnFlowProbe:ForwardLogger(0x6508f0, " ------- >>>")
++45.027360080s WsnFlowProbe:ForwardLogger(0x6508f0, " --------------------------------- >>>", 1)
++45.027360080s WsnFlowProbe:ForwardLogger(): ReportForwarding (0x6508f0, 11, 0, 24);
++45.027360080s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(0x64d060, 49, 0x653000, 255)
++45.027360080s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.027360080s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.027360080s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): 1184 acceptFrame0
++45.027360080s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): 1206 acceptFrame0
++45.027360080s WsnNwkProtocol:Send(): 0x64efb045.0274 source 00:14 dst 00:40 ftype = 0 is Forward = 1
++45.027360080s WsnNwkProtocol:Send(0x64efb0, " ntable is ", 64)
++45.027360080s WsnNwkProtocol:Send(0x64efb0, " ntable MAC addr is  ", b8:f6:fd:ff:fe:2f:16:2f)
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:McpsDataRequest(0x647150, 0x64cd00, "dcj come in ----------------------")
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:GetExtendedAddress(0x647150)
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:CheckQueue(0x647150)
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:SetLrWpanMacState(0x647150, "mac state = ", 1)
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:ChangeMacState(): 0x647150 change lrwpan mac state from 0 to 1
++45.027360080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PlmeSetTRXStateConfirm(0x647150, 6)
++45.027360094s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(0x648890, 49, 0x652ce0, 255)
++45.027360094s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.027360094s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.027360094s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): 1184 acceptFrame0
++45.027360094s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): 1206 acceptFrame0
++45.027360094s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataIndication(0x64a080, 49, 0x5d9ec0, 255)
++45.027360094s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.027360094s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.027360094s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataIndication(): 1184 acceptFrame0
++45.027360094s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataIndication(): 1206 acceptFrame0
++45.027488080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:SetLrWpanMacState(0x647150, "mac state = ", 5)
++45.027488080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:ChangeMacState(): 0x647150 change lrwpan mac state from 1 to 2
++45.027552047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PlmeSetTRXStateConfirm(0x64b870, 6)
++45.027552047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:CheckQueue(0x64b870)
++45.027680080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PlmeSetTRXStateConfirm(0x647150, 9)
++45.028000047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:IfsWaitTimeout(): LIFS of 40 symbols (+0.00064s) completed 
++45.028000047s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:CheckQueue(0x64b870)
++45.029440080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataConfirm(0x647150, 7, 1)
++45.029440080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PdDataConfirm(0x647150, " ------>>>>>> i had receviced a ack packet")
++45.029440080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:SetLrWpanMacState(0x647150, "mac state = ", 0)
++45.029440080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:ChangeMacState(): 0x647150 change lrwpan mac state from 2 to 0
++45.029440113s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(0x648890, 49, 0x653000, 255)
++45.029440113s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.029440113s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.029440113s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): 1184 acceptFrame1
++45.029440113s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): 1206 acceptFrame1
++45.029440113s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): receivedMacHdr is 1 0 0 1
++45.029440113s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): Packet from b1:59:0e:ff:fe:8d:47:00
++45.029440113s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): Packet to b8:f6:fd:ff:fe:2f:16:2f
++45.029440113s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): Data Packet is for me; forwarding up10
++45.029440113s [address b8:f6:fd:ff:fe:2f:16:2f] LrWpanMac:PdDataIndication(): Data Packet is for me; forwarding up
++45.029440113s WsnNwkProtocol:DataIndication(0x64f0a0)
+00:40 45.0294s EDGE Received packet of size 24
++45.029440113s WsnFlowProbe:ForwardUpLogger(0x650a40, " found", 1)
++45.029440113s WsnFlowProbe:ForwardUpLogger(): ReportLastRx (0x650a40, 11, 0, 24); framecContral is0
+destAddr: 00:40
+sourceAddr: 00:14
+radius: 0
+seqNum: 200
+destAddrIEEE: 0
+sourceAddrIEEE: 0
+multicastContral: 0
+relayCount: 0
+relayIndex: 0
+sourceList: [ ]
+
+00:40 45.0294 secs | Received DATA packet of size 17 m_addr is 00:40
++45.029440113s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataIndication(0x64a080, 49, 0x652460, 255)
++45.029440113s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.029440113s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.029440113s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataIndication(): 1184 acceptFrame0
++45.029440113s [address cb:87:a7:ff:fe:dd:7f:b1] LrWpanMac:PdDataIndication(): 1206 acceptFrame0
++45.029440113s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(0x64b870, 49, 0x64b570, 255)
++45.029440113s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.029440113s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.029440113s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): 1184 acceptFrame0
++45.029440113s [address 55:2e:cb:ff:fe:d3:71:31] LrWpanMac:PdDataIndication(): 1206 acceptFrame0
++45.029440127s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(0x64d060, 49, 0x64cc90, 255)
++45.029440127s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): m_macPromiscuousMode is 0
++45.029440127s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): acceptFrame is 1
++45.029440127s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): 1184 acceptFrame0
++45.029440127s [address 69:0a:ac:ff:fe:8d:fb:d7] LrWpanMac:PdDataIndication(): 1206 acceptFrame0
++45.029632080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:PlmeSetTRXStateConfirm(0x647150, 6)
++45.029632080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:CheckQueue(0x647150)
++45.030080080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:IfsWaitTimeout(): LIFS of 40 symbols (+0.00064s) completed 
++45.030080080s [address b1:59:0e:ff:fe:8d:47:00] LrWpanMac:CheckQueue(0x647150)
+----Flow ID:1
+Src Addr00:01Dst Addr 00:00
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+3.48803e+06ns
+Jitter =+0ns
+Throughput =17.9184Kbps
+
+
+
+----Flow ID:2
+Src Addr00:40Dst Addr 00:00
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+3.16803e+06ns
+Jitter =+0ns
+Throughput =19.7283Kbps
+
+
+
+----Flow ID:3
+Src Addr00:40Dst Addr 00:01
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+3.80803e+06ns
+Jitter =+0ns
+Throughput =16.4127Kbps
+
+
+
+----Flow ID:4
+Src Addr00:14Dst Addr 00:01
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+1.88805e+06ns
+Jitter =+0ns
+Throughput =33.103Kbps
+
+
+
+----Flow ID:5
+Src Addr00:14Dst Addr 00:00
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+1.88803e+06ns
+Jitter =+0ns
+Throughput =33.1032Kbps
+
+
+
+----Flow ID:6
+Src Addr00:14Dst Addr 00:40
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+3.16803e+06ns
+Jitter =+0ns
+Throughput =19.7283Kbps
+
+
+
+----Flow ID:7
+Src Addr00:15Dst Addr 00:01
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+1.56803e+06ns
+Jitter =+0ns
+Throughput =39.8589Kbps
+
+
+
+----Flow ID:8
+Src Addr00:15Dst Addr 00:00
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+1.88803e+06ns
+Jitter =+0ns
+Throughput =33.1032Kbps
+
+
+
+----Flow ID:9
+Src Addr00:15Dst Addr 00:40
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+3.48803e+06ns
+Jitter =+0ns
+Throughput =17.9184Kbps
+
+
+
+----Flow ID:10
+Src Addr00:15Dst Addr 00:14
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+4.51205e+06ns
+Jitter =+0ns
+Throughput =69.259Kbps
+
+
+
+----Flow ID:11
+Src Addr00:14Dst Addr 00:40
+Sent Packets=1
+Received Packets =1
+Lost Packets =0
+Packet delivery ratio =100%
+Packet loss ratio =0%
+Delay =+9.44011e+06ns
+Jitter =+0ns
+Throughput =19.8621Kbps
+
+
+
+----Flow ID:12
+Src Addr00:40Dst Addr 00:14
+Sent Packets=1
+Received Packets =0
+Lost Packets =1
+Packet delivery ratio =0%
+Packet loss ratio =100%
+Delay =+0ns
+Jitter =+0ns
+Throughput =-0Kbps
+
+
+
+--------Total Results of the simulation----------
+
+Total sent packets  =12
+Total Received Packets =11
+Total Lost Packets =1
+Average Throughput =26.6663Kbps
+End to End Delay =+3.83045e+07ns
+End to End Jitter delay =+0ns
+Total Flod id 12
+WsnNwkProtocol:DoDispose(0x64efb0)
+WsnNwkProtocol:DoDispose(0x64f0a0)
+WsnNwkProtocol:DoDispose(0x64f190)
+WsnNwkProtocol:DoDispose(0x64f280)
+WsnNwkProtocol:DoDispose(0x64f370)
+[root@master ns-3.34]# 

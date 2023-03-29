@@ -5,6 +5,7 @@
 #include "ns3/flow-monitor.h"
 #include "wsn-flow-classifier.h"
 #include "wsn-network.h"
+#include "wsn-flow-probe-tag.h"
 
 namespace ns3
 {
@@ -24,7 +25,11 @@ protected:
     virtual void DoDispose (void);
 
 private:
-    void SendOutgoingLogger (const NwkHeader &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface);
+    void SendOutgoingLogger (const NwkHeader &ipHeader, Ptr<const Packet> ipPayload);
+
+    void ForwardLogger (const NwkHeader &ipHeader, Ptr<const Packet> ipPayload);
+
+    void ForwardUpLogger (const NwkHeader &ipHeader, Ptr<const Packet> ipPayload);
     
     Ptr<WsnFlowClassifier> m_classifier;
 

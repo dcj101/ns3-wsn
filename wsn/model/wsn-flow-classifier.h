@@ -2,6 +2,7 @@
 #define WSN_FLOAT_CLASSIFIER_H
 
 #include "wsn-network.h"
+#include "wsn-network-header.h"
 #include "ns3/flow-classifier.h"
 
 

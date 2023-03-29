@@ -5,6 +5,8 @@ namespace ns3
 {
 NS_LOG_COMPONENT_DEFINE ("WsnNwkProtocol");
 
+NS_OBJECT_ENSURE_REGISTERED (WsnNwkProtocol);
+
 
 TypeId 
 WsnNwkProtocol::GetTypeId (void)
@@ -16,6 +18,16 @@ WsnNwkProtocol::GetTypeId (void)
                                     "A newly-generated packet by this node is "
                                     "about to be queued for transmission",
                                     MakeTraceSourceAccessor (&WsnNwkProtocol::m_sendTrace),
+                                    "ns3::WsnNwkProtocol::SentTracedCallback")
+                    .AddTraceSource ("UnicastForwardTrace",
+                                    "A unicast Wsn packet was received by this node "
+                                    "and is being forwarded to another node",
+                                    MakeTraceSourceAccessor (&WsnNwkProtocol::m_unicastForwardTrace),
+                                    "ns3::WsnNwkProtocol::SentTracedCallback")
+                    .AddTraceSource ("LocalDeliverTrace",
+                                    "An Wsn packet was received by/for this node, "
+                                    "and it is being forward up the stack",
+                                    MakeTraceSourceAccessor (&WsnNwkProtocol::m_localDeliverTrace),
                                     "ns3::WsnNwkProtocol::SentTracedCallback")
                                     ;
     return tid;
@@ -36,23 +48,33 @@ WsnNwkProtocol::WsnNwkProtocol(NODE_TYPE type)
 
 
 void 
-WsnNwkProtocol::Send(NwkShortAddress sourceaddr, NwkShortAddress dstaddr,Ptr<Packet> packet, NwkHeader::FrameType ftype)
+WsnNwkProtocol::Send(NwkShortAddress sourceaddr,  
+                      NwkShortAddress dstaddr,Ptr<Packet> packet, 
+                      NwkHeader::FrameType ftype
+                      , bool isForward = 0)
 {
-  NS_LOG_INFO(this << Simulator::Now ().GetSeconds () << " source " << sourceaddr << " dst " << dstaddr);
+  NS_LOG_INFO(this << Simulator::Now ().GetSeconds () << " source " << sourceaddr << " dst " << dstaddr << " ftype = " << ftype 
+              << " is Forward = " << isForward);
 
   if(m_depth == -1) 
   {
     NS_LOG_ERROR("No Join Request");
   }
-  
+
+  if(!isForward)
+      packet->RemoveAllByteTags();
+
   NwkHeader nwkHeader;
   nwkHeader.setType(ftype);
   nwkHeader.SetDestAddr(dstaddr);
   nwkHeader.SetSourceAddr(sourceaddr);
   packet->AddHeader(nwkHeader);
-  
+
+  if(!isForward)
+      m_sendTrace(nwkHeader,packet);
+
   McpsDataRequestParams params;
-  
+  m_ack = 1;
   if(m_ack) 
     params.m_txOptions = TX_OPTION_ACK;
   params.m_dstPanId = 1;
@@ -64,6 +86,7 @@ WsnNwkProtocol::Send(NwkShortAddress sourceaddr, NwkShortAddress dstaddr,Ptr<Pac
   
   if(nextHop.GetAddressU16() == 0x0000)
       nextHop = m_route;
+
   NS_LOG_FUNCTION(this << " ntable is " << nextHop.GetAddressU16());
   NeighborTable::NeighborEntry nextNeight = m_ntable.GetNeighborEntry(nextHop.GetAddressU16());
 
@@ -90,18 +113,8 @@ void
 WsnNwkProtocol::Install(Ptr<Node> node)
 {
     m_node = node;
-    CreateAndAggregateObjectFromTypeId(m_node,"ns3::WsnNwkProtocol");
 }
 
-
-void
-WsnNwkProtocol::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId)
-{
-  ObjectFactory factory;
-  factory.SetTypeId (typeId);
-  Ptr<Object> protocol = factory.Create <Object> ();
-  node->AggregateObject (protocol);
-}
 
 void 
 WsnNwkProtocol::Assign(Ptr<LrWpanNetDevice> netDevice)
@@ -155,7 +168,6 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
 
   }
 
-
   switch(m_nodeType)
   {
     case NODE_TYPE::EDGE :
@@ -192,7 +204,13 @@ WsnNwkProtocol::JoinRequest(Ptr<WsnNwkProtocol> wsnNwkProtocol)
   if(m_nodeType != NODE_TYPE::COOR)
     Simulator::Schedule(Seconds(0.01),&WsnNwkProtocol::Send,
                         this,m_addr,parents,Create<Packet>(1),
-                        NwkHeader::NWK_FRAME_COMMAND);
+                        NwkHeader::NWK_FRAME_COMMAND,0);
+}
+
+void 
+WsnNwkProtocol::SetNodeType(NODE_TYPE type)
+{
+  m_nodeType = type;
 }
 
 void 
@@ -269,7 +287,7 @@ WsnNwkProtocol::BeaconIndication (MlmeBeaconNotifyIndicationParams params, Ptr<P
 
 void
 WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
-{
+{    
     NS_LOG_FUNCTION(this);
     if(m_nodeType == NODE_TYPE::EDGE)
       NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s EDGE Received packet of size " << p->GetSize ());
@@ -280,12 +298,16 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
     
     NwkHeader receiverNwkHeader;
     p->RemoveHeader(receiverNwkHeader);
+
     double Delay = 0.0;
     double gap = 0.01;
+
     if(m_nodeType != NODE_TYPE::EDGE)
     {
+      
       if(receiverNwkHeader.GetType() == NwkHeader::NWK_FRAME_COMMAND)
       {
+        m_localDeliverTrace(receiverNwkHeader,p);
         NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << "s Received Command packet of size " << p->GetSize ());
         std::vector<NeighborTable::NeighborEntry> ntable = m_ntable.GetNeighborEntries();
         for(auto it : ntable)
@@ -302,32 +324,44 @@ WsnNwkProtocol::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
           // Send(receiverNwkHeader.GetSourceAddr(),it.networkAddr,p,NwkHeader::NWK_FRAME_COMMAND);
           Simulator::Schedule(Seconds(Delay),&WsnNwkProtocol::Send,
                         this,receiverNwkHeader.GetSourceAddr(),it.networkAddr
-                        ,p,NwkHeader::NWK_FRAME_COMMAND);
+                        ,p,NwkHeader::NWK_FRAME_COMMAND,0);
           Delay += gap;
           NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " send update route --->>>");
         }
       }
       else 
       {
-        NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize () << 
-        ",but i am a " << m_nodeType << " m_addr is " << m_addr << " ,so i will forwarding packet");
-        // 路由器转发数据包
-        // Send(receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),p,NwkHeader::NWK_FRAME_DATA);
-          Simulator::Schedule(Seconds(0.0),&WsnNwkProtocol::Send,
-                this,receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),
-                p,NwkHeader::NWK_FRAME_DATA);
+        if(m_nodeType == NODE_TYPE::ROUTE || (receiverNwkHeader.GetDestAddr() != m_addr))
+        {
+          NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize () << 
+          ",but i am a " << m_nodeType << " m_addr is " << m_addr << " ,so i will forwarding packet");
+          // 路由器转发数据包
+          // Send(receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),p,NwkHeader::NWK_FRAME_DATA);
+            m_unicastForwardTrace(receiverNwkHeader,p);
+            Simulator::Schedule(Seconds(0.0),&WsnNwkProtocol::Send,
+                  this,receiverNwkHeader.GetSourceAddr(),receiverNwkHeader.GetDestAddr(),
+                  p,NwkHeader::NWK_FRAME_DATA,1);          
+        }
+        else 
+        {
+          m_localDeliverTrace(receiverNwkHeader,p);
+          NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Coor Received DATA packet of size " << p->GetSize ());
+          //实现应用层回调 
+        }
       }
     }
     else 
     {
       if(receiverNwkHeader.GetType() == NwkHeader::NWK_FRAME_COMMAND)
       {
+        m_localDeliverTrace(receiverNwkHeader,p);
         // 报文抛弃 end Device
         NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received Command packet of size " << p->GetSize () << 
         ", but i am a EDGE ! my addr is = " << m_addr);
       }
       else 
       {
+        m_localDeliverTrace(receiverNwkHeader,p);
         NS_LOG_UNCOND (m_addr << " " <<Simulator::Now ().GetSeconds () << " secs | Received DATA packet of size " << p->GetSize ()
         << " m_addr is " << m_addr);
         //实现应用层回调
@@ -392,4 +426,29 @@ WsnNwkProtocol::DoDispose (void)
     m_node = 0;
     Object::DoDispose ();
 }
+
+void
+WsnNwkProtocolHelper::CreateAndAggregateObjectFromTypeId (NodeContainer container, const std::string typeId)
+{
+  NS_LOG_FUNCTION(this << " " << typeId);
+  NodeContainer::Iterator i;
+  for (i = container.Begin (); i != container.End (); ++i)
+  {
+    ObjectFactory factory;
+    factory.SetTypeId (typeId);
+    Ptr<Object> protocol = factory.Create <Object> ();
+    (*i)->AggregateObject (protocol);
+  }
+}
+
+void
+WsnNwkProtocolHelper::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId)
+{
+  NS_LOG_FUNCTION(this << " " << typeId);
+  ObjectFactory factory;
+  factory.SetTypeId (typeId);
+  Ptr<Object> protocol = factory.Create <Object> ();
+  node->AggregateObject (protocol);
+}
+
 }

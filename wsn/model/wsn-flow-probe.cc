@@ -4,135 +4,9 @@
 
 namespace ns3
 {
+
+
 NS_LOG_COMPONENT_DEFINE ("WsnFlowProbe");
-
-
-class WsnFlowProbeTag : public Tag
-{
-public:
-
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (TagBuffer buf) const;
-  virtual void Deserialize (TagBuffer buf);
-  virtual void Print (std::ostream &os) const;
-  WsnFlowProbeTag ();
-
-  WsnFlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize, NwkShortAddress src, NwkShortAddress dst);
-
-  void SetFlowId (uint32_t flowId);
-
-  void SetPacketId (uint32_t packetId);
-
-  void SetPacketSize (uint32_t packetSize);
-
-  uint32_t GetFlowId (void) const;
-
-  uint32_t GetPacketId (void) const;
-
-  uint32_t GetPacketSize (void) const;
-
-  bool IsSrcDstValid (NwkShortAddress src, NwkShortAddress dst) const;
-private:
-  uint32_t m_flowId;      //!< flow identifier
-  uint32_t m_packetId;    //!< packet identifier
-  uint32_t m_packetSize;  //!< packet size
-  NwkShortAddress m_src;      //!< IP source
-  NwkShortAddress m_dst;      //!< IP destination
-};
-
-
-TypeId 
-WsnFlowProbeTag::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::WsnFlowProbeTag")
-    .SetParent<Tag> ()
-    .SetGroupName ("FlowMonitor")
-    .AddConstructor<WsnFlowProbeTag> ()
-  ;
-  return tid;
-}
-TypeId 
-WsnFlowProbeTag::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-uint32_t 
-WsnFlowProbeTag::GetSerializedSize (void) const
-{
-  return 4 + 4 + 4 + 8;
-}
-void 
-WsnFlowProbeTag::Serialize (TagBuffer buf) const
-{
-  buf.WriteU32 (m_flowId);
-  buf.WriteU32 (m_packetId);
-  buf.WriteU32 (m_packetSize);
-  buf.WriteU16(m_src.GetAddressU16());
-  buf.WriteU16(m_dst.GetAddressU16());
-}
-void 
-WsnFlowProbeTag::Deserialize (TagBuffer buf)
-{
-  m_flowId = buf.ReadU32 ();
-  m_packetId = buf.ReadU32 ();
-  m_packetSize = buf.ReadU32 ();
-  m_src = NwkShortAddress(buf.ReadU16());
-  m_dst = NwkShortAddress(buf.ReadU16());
-}
-void 
-WsnFlowProbeTag::Print (std::ostream &os) const
-{
-  os << "FlowId=" << m_flowId;
-  os << " PacketId=" << m_packetId;
-  os << " PacketSize=" << m_packetSize;
-}
-WsnFlowProbeTag::WsnFlowProbeTag ()
-  : Tag () 
-{
-}
-
-WsnFlowProbeTag::WsnFlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize, NwkShortAddress src, NwkShortAddress dst)
-  : Tag (), m_flowId (flowId), m_packetId (packetId), m_packetSize (packetSize), m_src (src), m_dst (dst)
-{
-}
-
-void
-WsnFlowProbeTag::SetFlowId (uint32_t id)
-{
-  m_flowId = id;
-}
-void
-WsnFlowProbeTag::SetPacketId (uint32_t id)
-{
-  m_packetId = id;
-}
-void
-WsnFlowProbeTag::SetPacketSize (uint32_t size)
-{
-  m_packetSize = size;
-}
-uint32_t
-WsnFlowProbeTag::GetFlowId (void) const
-{
-  return m_flowId;
-}
-uint32_t
-WsnFlowProbeTag::GetPacketId (void) const
-{
-  return m_packetId;
-} 
-uint32_t
-WsnFlowProbeTag::GetPacketSize (void) const
-{
-  return m_packetSize;
-}
-bool
-WsnFlowProbeTag::IsSrcDstValid (NwkShortAddress src, NwkShortAddress dst) const
-{
-  return ((m_src == src) && (m_dst == dst));
-}
 
 // ------------------------------------
 // ------------------------------------
@@ -156,9 +30,19 @@ WsnFlowProbe::WsnFlowProbe (Ptr<FlowMonitor> monitor,
   NS_LOG_FUNCTION (this << node->GetId ());
 
   m_wsnNwkProtocol = node->GetObject<WsnNwkProtocol> ();
-
+  std::cout << m_wsnNwkProtocol << "\n";
   if (!m_wsnNwkProtocol->TraceConnectWithoutContext ("SendTrace",
                                            MakeCallback (&WsnFlowProbe::SendOutgoingLogger, Ptr<WsnFlowProbe> (this))))
+    {
+      NS_FATAL_ERROR ("trace fail");
+    }
+  if (!m_wsnNwkProtocol->TraceConnectWithoutContext ("UnicastForwardTrace",
+                                           MakeCallback (&WsnFlowProbe::ForwardLogger, Ptr<WsnFlowProbe> (this))))
+    {
+      NS_FATAL_ERROR ("trace fail");
+    }
+  if (!m_wsnNwkProtocol->TraceConnectWithoutContext ("LocalDeliverTrace",
+                                           MakeCallback (&WsnFlowProbe::ForwardUpLogger, Ptr<WsnFlowProbe> (this))))
     {
       NS_FATAL_ERROR ("trace fail");
     }
@@ -175,12 +59,15 @@ WsnFlowProbe::DoDispose ()
 
 
 void
-WsnFlowProbe::SendOutgoingLogger (const NwkHeader &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
+WsnFlowProbe::SendOutgoingLogger (const NwkHeader &ipHeader, Ptr<const Packet> ipPayload)
 {
+  NS_LOG_FUNCTION(this << " ------- >>>");
   FlowId flowId;
   FlowPacketId packetId;
   WsnFlowProbeTag fTag;
   bool found = ipPayload->FindFirstMatchingByteTag (fTag);
+  NS_LOG_FUNCTION(this << " ------- >>>" << found);
+
   if (found)
     {
       return;
@@ -198,5 +85,56 @@ WsnFlowProbe::SendOutgoingLogger (const NwkHeader &ipHeader, Ptr<const Packet> i
       ipPayload->AddByteTag (fTag);
     }
 }
+
+
+void
+WsnFlowProbe::ForwardLogger (const NwkHeader &ipHeader, Ptr<const Packet> ipPayload)
+{
+  NS_LOG_FUNCTION(this << " ------- >>>");
+  WsnFlowProbeTag fTag;
+  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
+  NS_LOG_FUNCTION(this << " --------------------------------- >>>" << found);
+
+    if (found)
+    {
+        if (!fTag.IsSrcDstValid (ipHeader.GetSourceAddr (), ipHeader.GetDestAddr ()))
+        {
+          NS_LOG_LOGIC ("Not reporting encapsulated packet");
+          return;
+        }
+
+        FlowId flowId = fTag.GetFlowId ();
+        FlowPacketId packetId = fTag.GetPacketId ();
+
+      uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
+      NS_LOG_DEBUG ("ReportForwarding ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<");");
+      m_flowMonitor->ReportForwarding (this, flowId, packetId, size);
+    }
+}
+
+void
+WsnFlowProbe::ForwardUpLogger (const NwkHeader &ipHeader, Ptr<const Packet> ipPayload)
+{
+  WsnFlowProbeTag fTag;
+  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
+  NS_LOG_FUNCTION(this << " found" << found);
+  if (found)
+    {
+      if (!fTag.IsSrcDstValid (ipHeader.GetSourceAddr (), ipHeader.GetDestAddr ()))
+        {
+          NS_LOG_LOGIC ("Not reporting encapsulated packet");
+          return;
+        }
+
+      FlowId flowId = fTag.GetFlowId ();
+      FlowPacketId packetId = fTag.GetPacketId ();
+
+      uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
+      NS_LOG_DEBUG ("ReportLastRx ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<"); "
+                                     << ipHeader << *ipPayload);
+      m_flowMonitor->ReportLastRx (this, flowId, packetId, size);
+    }
+}
+
 
 }   

@@ -6,13 +6,14 @@
 #include "ns3/wsn-network.h"
 #include "ns3/node.h"
 #include "ns3/node-list.h"
+#include <iostream>
 
 
 namespace ns3 {
 
 WsnFlowMonitorHelper::WsnFlowMonitorHelper ()
 {
-  m_monitorFactory.SetTypeId ("ns3::WsnFlowMonitor");
+  m_monitorFactory.SetTypeId ("ns3::FlowMonitor");
   // m_flowMonitor = m_monitorFactory.Create<FlowMonitor> ();
 
 }
@@ -67,6 +68,7 @@ WsnFlowMonitorHelper::Install (Ptr<Node> node)
   Ptr<WsnNwkProtocol> wsnNwkProtocol = node->GetObject<WsnNwkProtocol> ();
   if (wsnNwkProtocol)
     {
+      std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
       Ptr<WsnFlowProbe> probe = Create<WsnFlowProbe> (monitor,
                                                         DynamicCast<WsnFlowClassifier> (classifier),
                                                         node);
@@ -80,6 +82,7 @@ WsnFlowMonitorHelper::Install (NodeContainer nodes)
 {
   for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
     {
+      std::cout << "@@@@@@@@@@@@@@\n";
       Ptr<Node> node = *i;
       if (node->GetObject<WsnNwkProtocol> ())
         {
@@ -92,6 +95,7 @@ WsnFlowMonitorHelper::Install (NodeContainer nodes)
 Ptr<FlowMonitor>
 WsnFlowMonitorHelper::InstallAll ()
 {
+      std::cout << "@@@@@@@@@@@@@@@@@@\n";
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
     {
       Ptr<Node> node = *i;

@@ -60,7 +60,7 @@ private:
 
 private:
   Ptr<SpectrumChannel> m_channel; 
-
+  
 };
 
 }

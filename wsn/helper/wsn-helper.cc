@@ -294,11 +294,6 @@ WsnHelper::AssociateToBeaconPan (NetDeviceContainer c, uint16_t panId, Mac16Addr
   return;
 }
 
-/**
- * @brief Write a packet in a PCAP file
- * @param file the output file
- * @param packet the packet
- */
 static void
 PcapSniffLrWpan (Ptr<PcapFileWrapper> file, Ptr<const Packet> packet)
 {
@@ -310,16 +305,7 @@ void
 WsnHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename)
 {
   NS_LOG_FUNCTION (this << prefix << nd << promiscuous << explicitFilename);
-  //
-  // All of the Pcap enable functions vector through here including the ones
-  // that are wandering through all of devices on perhaps all of the nodes in
-  // the system.
-  //
 
-  // In the future, if we create different NetDevice types, we will
-  // have to switch on each type below and insert into the right
-  // NetDevice type
-  //
   Ptr<LrWpanNetDevice> device = nd->GetObject<LrWpanNetDevice> ();
   if (device == 0)
     {
